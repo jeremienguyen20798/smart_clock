@@ -1,0 +1,22 @@
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "smart-clock-b7852",
+                    "appId": "1:952438402975:android:e6fc43aed2db961c2a97aa",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "smart-clock-b7852",
+                    "configurations": {
+                        "android": "1:952438402975:android:e6fc43aed2db961c2a97aa",
+                        "ios": "1:952438402975:ios:625a26342226a70d2a97aa"
+                    }
+                }
+            }
+        }
+    }
+}
