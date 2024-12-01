@@ -13,7 +13,7 @@ class AlarmCountdownCubit extends Cubit<AlarmCountdownState> {
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       Duration duration = DateTimeUtils.calculateRemainingTime(dateTime);
-      if (duration.inSeconds == 0) {
+      if (duration.inSeconds == 1) {
         timer.cancel();
         emit(SuccessAlarmCountdownState());
       } else {

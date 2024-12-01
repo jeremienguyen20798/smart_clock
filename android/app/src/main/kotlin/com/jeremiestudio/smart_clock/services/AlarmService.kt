@@ -31,11 +31,12 @@ class AlarmService : Service() {
 
     @SuppressLint("DefaultLocale")
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        val notificationId : Long = intent.getLongExtra("notification_id", 0)
         val hour: Int = intent.getIntExtra("hour", 0)
         val minute: Int = intent.getIntExtra("minute", 0)
         val noteAlarm: String = intent.getStringExtra("note").toString()
         showNotification(
-            hour + minute,
+            notificationId.toInt(),
             this,
             "$noteAlarm - ${String.format("%02d", hour)}:${String.format("%02d", minute)}"
         )

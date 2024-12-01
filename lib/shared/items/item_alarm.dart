@@ -12,7 +12,7 @@ import 'package:smart_clock/shared/widgets/alarm_notification.dart';
 import '../../data/models/alarm.dart';
 import '../../features/home/bloc/home_event.dart';
 
-class ItemAlarm extends StatelessWidget {
+class ItemAlarm extends StatefulWidget {
   final Alarm alarm;
   final bool? isDelete;
 
@@ -23,9 +23,22 @@ class ItemAlarm extends StatelessWidget {
   });
 
   @override
+  State<ItemAlarm> createState() => _ItemAlarmState();
+}
+
+class _ItemAlarmState extends State<ItemAlarm> {
+  bool isAlarmActive = false;
+
+  @override
+  void initState() {
+    isAlarmActive = widget.alarm.isActive;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (_) => AlarmCountdownCubit(alarm.alarmDateTime),
+        create: (_) => AlarmCountdownCubit(widget.alarm.alarmDateTime),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -33,10 +46,12 @@ class ItemAlarm extends StatelessWidget {
             const AlarmNotification(),
             ListTile(
               onLongPress: () {
-                context.read<HomeBloc>().add(OnLongClickItemEvent(alarm));
+                context
+                    .read<HomeBloc>()
+                    .add(OnLongClickItemEvent(widget.alarm));
               },
               onTap: () {
-                DialogUtils.showEditAlarmDialog(context, alarm, (alarm) {
+                DialogUtils.showEditAlarmDialog(context, widget.alarm, (alarm) {
                   context.read<HomeBloc>().add(OnUpdateAlarmEvent(alarm));
                 });
               },
@@ -44,7 +59,7 @@ class ItemAlarm extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   text: TextSpan(
-                      text: StringUtils.formatTime(alarm.alarmDateTime),
+                      text: StringUtils.formatTime(widget.alarm.alarmDateTime),
                       style: const TextStyle(
                         fontSize: 24.0,
                         color: Colors.black,
@@ -52,7 +67,7 @@ class ItemAlarm extends StatelessWidget {
                       children: [
                         const TextSpan(text: AppConstants.space),
                         TextSpan(
-                            text: alarm.note ?? AppConstants.alarmTab,
+                            text: widget.alarm.note ?? AppConstants.alarm,
                             style: const TextStyle(
                               fontSize: 16.0,
                               color: Colors.grey,
@@ -62,7 +77,7 @@ class ItemAlarm extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(alarm.typeAlarm ?? AlarmType.justonce.content(),
+                  Text(widget.alarm.typeAlarm ?? AlarmType.justonce.content(),
                       style: const TextStyle(
                         fontSize: 14.0,
                         color: Colors.grey,
@@ -77,14 +92,23 @@ class ItemAlarm extends StatelessWidget {
                   )
                 ],
               ),
-              trailing: isDelete == null
-                  ? Switch(value: alarm.isActive, onChanged: (value) {})
+              trailing: widget.isDelete == null
+                  ? Switch(
+                      value: isAlarmActive,
+                      onChanged: (value) {
+                        setState(() {
+                          isAlarmActive = value;
+                          context
+                              .read<HomeBloc>()
+                              .add(OnCancelAlarmEvent(widget.alarm, value));
+                        });
+                      })
                   : Checkbox(
-                      value: isDelete,
+                      value: widget.isDelete,
                       onChanged: (value) {
                         context
                             .read<HomeBloc>()
-                            .add(OnLongClickItemEvent(alarm));
+                            .add(OnLongClickItemEvent(widget.alarm));
                       }),
             ),
           ],

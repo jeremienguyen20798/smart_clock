@@ -1,4 +1,4 @@
-# smart_clock
+# Smart Clock (Đồng hồ thông minh)
 
 A Flutter project to create alarm by speech with Gemini AI.
 

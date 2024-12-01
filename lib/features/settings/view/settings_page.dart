@@ -2,6 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_clock/core/utils/dialog_utils.dart';
 
+import '../../../core/constants/app_constants.dart';
+
 TextEditingController promptController = TextEditingController();
 
 class SettingsPage extends StatelessWidget {
@@ -20,7 +22,7 @@ class SettingsPage extends StatelessWidget {
               },
               icon: const Icon(Icons.arrow_back)),
           title: const Text(
-            'Cài đặt',
+            AppConstants.titleSettings,
             style: TextStyle(
               fontSize: 18.0,
               color: Colors.black,
@@ -32,7 +34,7 @@ class SettingsPage extends StatelessWidget {
           children: [
             ListTile(
               title: const Text(
-                'Xoá báo thức sau khi thông báo',
+                AppConstants.whenDelete,
                 style: TextStyle(
                   fontSize: 16.0,
                   color: Colors.black,
@@ -43,7 +45,7 @@ class SettingsPage extends StatelessWidget {
             ),
             ListTile(
               title: const Text(
-                'Nội dung thông báo mặc định',
+                AppConstants.defaultContentNotify,
                 style: TextStyle(
                   fontSize: 16.0,
                   color: Colors.black,
@@ -52,7 +54,7 @@ class SettingsPage extends StatelessWidget {
               ),
               subtitle: RichText(
                   text: TextSpan(
-                      text: 'Báo thức',
+                      text: AppConstants.alarm,
                       style: const TextStyle(
                         fontSize: 14.0,
                         color: Colors.grey,
