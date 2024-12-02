@@ -31,6 +31,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<OnHandleErrorEvent>(_onHandleError);
     on<OnUpdateAlarmEvent>(_onUpdateAlarm);
     on<OnCancelAlarmEvent>(_onCancelAlarm);
+    on<OnReloadAlarmListEvent>(_onReloadAlarmList);
   }
 
   Future<void> _onRequestPermission(
@@ -119,13 +120,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emitter(HandleErrorState(AppConstants.errorText));
   }
 
-  void _onUpdateAlarm(OnUpdateAlarmEvent event, Emitter<HomeState> emitter) {
+  Future<void> _onUpdateAlarm(
+      OnUpdateAlarmEvent event, Emitter<HomeState> emitter) async {
     final Alarm result = event.alarm;
     SmartClockLocalDB.updateAlarm(result);
-    add(GetAlarmListEvent());
+    await methodChannel.invokeMethod('updateAlarm', result.toJson());
+    add(OnReloadAlarmListEvent());
   }
 
-  Future<void> _onCancelAlarm(OnCancelAlarmEvent event, Emitter<HomeState> emitter) async {
+  Future<void> _onReloadAlarmList(
+      OnReloadAlarmListEvent event, Emitter<HomeState> emitter) async {
+    final dataList = await SmartClockLocalDB.getAlarmList();
+    emitter(ReloadAlarmListState(dataList));
+  }
+
+  Future<void> _onCancelAlarm(
+      OnCancelAlarmEvent event, Emitter<HomeState> emitter) async {
     SmartClockLocalDB.updateAlarmStatus(event.alarm.key, event.isActive);
     await methodChannel.invokeMethod("cancelAlarm", event.alarm.toJson());
     EasyLoading.showInfo('Đã huỷ báo thức');

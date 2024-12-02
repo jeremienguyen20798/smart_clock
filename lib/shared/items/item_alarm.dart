@@ -28,17 +28,27 @@ class ItemAlarm extends StatefulWidget {
 
 class _ItemAlarmState extends State<ItemAlarm> {
   bool isAlarmActive = false;
+  DateTime dateTime = DateTime.now();
 
   @override
   void initState() {
     isAlarmActive = widget.alarm.isActive;
+    dateTime = widget.alarm.alarmDateTime;
     super.initState();
+  }
+
+  @override
+  void didUpdateWidget(covariant ItemAlarm oldWidget) {
+    if (oldWidget.alarm.alarmDateTime != widget.alarm.alarmDateTime) {
+      dateTime = widget.alarm.alarmDateTime;
+    }
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (_) => AlarmCountdownCubit(widget.alarm.alarmDateTime),
+        create: (_) => AlarmCountdownCubit(dateTime),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -83,13 +93,13 @@ class _ItemAlarmState extends State<ItemAlarm> {
                         color: Colors.grey,
                       )),
                   const Expanded(
-                    child: AlarmCountdown(
-                        textStyle: TextStyle(
-                      fontSize: 14.0,
-                      color: Colors.grey,
-                      overflow: TextOverflow.ellipsis,
-                    )),
-                  )
+                      child: AlarmCountdownView(
+                          isNote: true,
+                          textStyle: TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.grey,
+                            overflow: TextOverflow.ellipsis,
+                          )))
                 ],
               ),
               trailing: widget.isDelete == null

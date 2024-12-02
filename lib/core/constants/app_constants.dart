@@ -1,3 +1,4 @@
+import 'package:smart_clock/core/utils/string_utils.dart';
 import 'package:smart_clock/data/models/alarm.dart';
 
 class AppConstants {
@@ -38,7 +39,7 @@ class AppConstants {
   static const String messagePrompt = 'Tạo báo thức với yêu cầu của bạn';
   static const String ringText = 'Đổ chuông';
   static Alarm demoAlarm = Alarm(
-      alarmId: "alarmId",
+      alarmId: StringUtils.generateAlarmIdStr(),
       alarmDateTime: DateTime.now().add(const Duration(minutes: 2)),
       isActive: true);
 }

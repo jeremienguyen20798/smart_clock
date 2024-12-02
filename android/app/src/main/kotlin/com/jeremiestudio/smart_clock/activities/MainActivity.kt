@@ -44,11 +44,14 @@ class MainActivity : FlutterActivity() {
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger, channel
         ).setMethodCallHandler { call: MethodCall, result: MethodChannel.Result ->
-            if (call.method == "setAlarm") {
+            if (call.method == "setAlarm" || call.method == "updateAlarm") {
                 val data = call.arguments as Map<*, *>
                 Log.d("TAG", "configureFlutterEngine: $data")
                 val note: String = data["note"].toString()
-                val dateStr = data["dateTime"] as String
+                var dateStr = data["dateTime"] as String
+                if (dateStr.length != 26) {
+                    dateStr += "000"
+                }
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
                 val localDateTime = LocalDateTime.parse(dateStr, formatter)
                 val dateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
@@ -93,7 +96,10 @@ class MainActivity : FlutterActivity() {
     @SuppressLint("NewApi")
     private fun cancelAlarm(call: MethodCall) {
         val data = call.arguments as Map<*, *>
-        val dateStr = data["dateTime"] as String
+        var dateStr = data["dateTime"] as String
+        if (dateStr.length != 26) {
+            dateStr += "000"
+        }
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
         val localDateTime = LocalDateTime.parse(dateStr, formatter)
         val dateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())

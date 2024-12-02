@@ -4,7 +4,7 @@ import 'package:smart_clock/data/models/alarm.dart';
 class SmartClockLocalDB {
   static Future<void> createAlarm(Alarm alarm) async {
     final alarmBox = await Hive.openBox<Alarm>('alarms');
-    alarmBox.add(alarm);
+    alarmBox.put(alarm.alarmId, alarm);
   }
 
   static Future<bool> checkAlarmExists(Alarm alarm) async {
@@ -16,7 +16,7 @@ class SmartClockLocalDB {
     await alarm.save();
   }
 
-  static Future<void> updateAlarmStatus(int id, bool value) async {
+  static Future<void> updateAlarmStatus(String id, bool value) async {
     final alarmBox = await Hive.openBox<Alarm>('alarms');
     final alarm = alarmBox.get(id);
     if (alarm != null) {

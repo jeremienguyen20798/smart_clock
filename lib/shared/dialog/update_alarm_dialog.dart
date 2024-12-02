@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_clock/core/utils/string_utils.dart';
 import 'package:smart_clock/data/models/alarm.dart';
+import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown_cubit.dart';
+import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown_view.dart';
 
 import '../../core/constants/app_constants.dart';
 
@@ -17,6 +20,7 @@ class UpdateAlarmDialog extends StatefulWidget {
 class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
   DateTime dateTime = DateTime.now();
   Alarm? updateAlarm;
+  bool isActive = false;
 
   @override
   void initState() {
@@ -26,54 +30,106 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: Colors.white,
-      actionsAlignment: MainAxisAlignment.center,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      title: Text(
-        StringUtils.formatTime(dateTime),
-        style: const TextStyle(
-          fontSize: 24.0,
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      content: SizedBox(
-        height: 200.0,
-        child: CupertinoDatePicker(
-            initialDateTime: updateAlarm?.alarmDateTime,
-            onDateTimeChanged: (value) {
-              setState(() {
-                dateTime = value;
-              });
-            },
-            mode: CupertinoDatePickerMode.time,
-            use24hFormat: true),
-      ),
-      actions: [
-        MaterialButton(
-          onPressed: () {
-            updateAlarm?.alarmDateTime = dateTime;
-            Navigator.pop(context, updateAlarm);
-          },
-          elevation: 0.0,
-          minWidth: MediaQuery.of(context).size.width,
-          height: kMinInteractiveDimension,
+    return BlocProvider(
+        create: (_) => AlarmCountdownCubit(dateTime),
+        child: AlertDialog(
+          backgroundColor: Colors.white,
+          actionsAlignment: MainAxisAlignment.center,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-          color: Colors.purple,
-          textColor: Colors.white,
-          child: const Text(
-            AppConstants.edit,
-            style: TextStyle(fontSize: 16.0),
+          titlePadding: const EdgeInsets.all(16.0),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 16.0),
+          title: ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: RichText(
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                text: TextSpan(
+                    text: StringUtils.formatTime(widget.alarm.alarmDateTime),
+                    style: const TextStyle(
+                      fontSize: 24.0,
+                      color: Colors.purple,
+                    ),
+                    children: [
+                      TextSpan(
+                          text: " ${widget.alarm.note ?? AppConstants.alarm}",
+                          style: const TextStyle(
+                              fontSize: 18.0, color: Colors.black))
+                    ])),
+            subtitle: const AlarmCountdownView(),
+            trailing: Switch(
+                value: isActive,
+                onChanged: (value) {
+                  setState(() {
+                    isActive = value;
+                  });
+                }),
           ),
-        )
-      ],
-    );
+          content: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: 100.0,
+            child: CupertinoDatePicker(
+                initialDateTime: updateAlarm?.alarmDateTime,
+                onDateTimeChanged: (value) {
+                  setState(() {
+                    dateTime = value;
+                  });
+                },
+                mode: CupertinoDatePickerMode.time,
+                use24hFormat: true),
+          ),
+          actions: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: MaterialButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0)),
+                    color: Colors.grey.shade200,
+                    elevation: 0.0,
+                    height: kMinInteractiveDimension,
+                    child: const Text(
+                      AppConstants.cancel,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: MaterialButton(
+                    onPressed: () {
+                      setState(() {
+                        widget.alarm.alarmDateTime = dateTime;
+                        widget.alarm.isActive = isActive;
+                        Navigator.pop(context, widget.alarm);
+                      });
+                    },
+                    elevation: 0.0,
+                    height: kMinInteractiveDimension,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0)),
+                    color: Colors.purple,
+                    textColor: Colors.white,
+                    child: const Text(
+                      AppConstants.edit,
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                )
+              ],
+            )
+          ],
+        ));
   }
 
   void initData() {
     dateTime = widget.alarm.alarmDateTime;
     updateAlarm = widget.alarm;
+    isActive = widget.alarm.isActive;
   }
 }

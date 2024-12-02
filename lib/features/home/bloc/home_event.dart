@@ -48,3 +48,5 @@ class OnCancelAlarmEvent extends HomeEvent {
 
   OnCancelAlarmEvent(this.alarm, this.isActive);
 }
+
+class OnReloadAlarmListEvent extends HomeEvent {}
