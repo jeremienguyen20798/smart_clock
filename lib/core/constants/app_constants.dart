@@ -7,6 +7,7 @@ class AppConstants {
   static const String homeTitleText = 'Chào, Nguyễn Hoàng Phúc';
   static const String alarm = 'Báo thức';
   static const String deleteAlarm = 'Xoá';
+  static const String turnOffNotification = 'Tắt thông báo';
 
   //Setting Page
   static const String addAlarmTitleText = 'Thêm báo thức';

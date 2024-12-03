@@ -25,6 +25,11 @@ class SmartClockLocalDB {
     }
   }
 
+  static Future<Alarm?> getAlarmFromId(String id) async {
+    final alarmBox = await Hive.openBox<Alarm>('alarms');
+    return alarmBox.get(id);
+  }
+
   static Future<void> deleteAlarm(List<Alarm> dataList) async {
     final alarmBox = await Hive.openBox<Alarm>('alarms');
     final alarmKeys = dataList.map((e) => e.key).toList();

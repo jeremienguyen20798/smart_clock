@@ -19,7 +19,6 @@ class UpdateAlarmDialog extends StatefulWidget {
 
 class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
   DateTime dateTime = DateTime.now();
-  Alarm? updateAlarm;
   bool isActive = false;
 
   @override
@@ -69,10 +68,18 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
             width: MediaQuery.of(context).size.width,
             height: 100.0,
             child: CupertinoDatePicker(
-                initialDateTime: updateAlarm?.alarmDateTime,
+                initialDateTime: widget.alarm.alarmDateTime,
                 onDateTimeChanged: (value) {
                   setState(() {
-                    dateTime = value;
+                    dateTime = DateTime(
+                        DateTime.now().year,
+                        DateTime.now().month,
+                        DateTime.now().day,
+                        value.hour,
+                        value.minute,
+                        value.second,
+                        value.millisecond,
+                        value.microsecond);
                   });
                 },
                 mode: CupertinoDatePickerMode.time,
@@ -104,9 +111,8 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
                   child: MaterialButton(
                     onPressed: () {
                       setState(() {
-                        widget.alarm.alarmDateTime = dateTime;
-                        widget.alarm.isActive = isActive;
-                        Navigator.pop(context, widget.alarm);
+                        Navigator.pop(context,
+                            {"dateTime": dateTime, "isActive": isActive});
                       });
                     },
                     elevation: 0.0,
@@ -129,7 +135,6 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
 
   void initData() {
     dateTime = widget.alarm.alarmDateTime;
-    updateAlarm = widget.alarm;
     isActive = widget.alarm.isActive;
   }
 }

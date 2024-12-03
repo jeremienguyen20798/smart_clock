@@ -28,28 +28,7 @@ class _AlarmCountdownViewState extends State<AlarmCountdownView> {
   Widget build(BuildContext context) {
     return BlocBuilder<AlarmCountdownCubit, AlarmCountdownState>(
         builder: (context, state) {
-      if (state.duration == null) {
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            widget.isNote == true
-                ? Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 6.0),
-                    height: 12.0,
-                    width: 1.0,
-                    color: Colors.grey)
-                : const SizedBox(),
-            Text(
-              'Đang tính toán...',
-              style: widget.textStyle ??
-                  const TextStyle(
-                      overflow: TextOverflow.ellipsis, fontSize: 14.0),
-              maxLines: 1,
-            ),
-          ],
-        );
-      }
+      if (state.duration == null) return const SizedBox();
       if (state.duration == Duration.zero) return const SizedBox();
       final hours = state.duration!.inHours;
       final minutes = state.duration!.inMinutes % 60;

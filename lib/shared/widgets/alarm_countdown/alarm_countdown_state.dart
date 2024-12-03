@@ -5,3 +5,5 @@ class AlarmCountdownState {
 }
 
 class SuccessAlarmCountdownState extends AlarmCountdownState {}
+
+class TurnOffNotificationState extends AlarmCountdownState {}

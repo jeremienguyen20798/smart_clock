@@ -81,3 +81,5 @@ class ReloadAlarmListState extends HomeState {
   @override
   List<Object?> get props => [alarmList];
 }
+
+class CancelAlarmState extends HomeState {}

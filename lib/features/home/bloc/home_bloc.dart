@@ -122,10 +122,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onUpdateAlarm(
       OnUpdateAlarmEvent event, Emitter<HomeState> emitter) async {
-    final Alarm result = event.alarm;
-    SmartClockLocalDB.updateAlarm(result);
-    await methodChannel.invokeMethod('updateAlarm', result.toJson());
-    add(OnReloadAlarmListEvent());
+    final Alarm? alarm = await SmartClockLocalDB.getAlarmFromId(event.idAlarm);
+    if (alarm != null) {
+      final result =
+          await methodChannel.invokeMethod("cancelAlarm", alarm.toJson());
+      if (result != null) {
+        alarm.alarmDateTime = event.dateTime;
+        alarm.isActive = event.isActive;
+        SmartClockLocalDB.updateAlarm(alarm);
+        await methodChannel.invokeMethod('setAlarm', alarm.toJson());
+        add(OnReloadAlarmListEvent());
+      }
+    }
   }
 
   Future<void> _onReloadAlarmList(
@@ -138,6 +146,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       OnCancelAlarmEvent event, Emitter<HomeState> emitter) async {
     SmartClockLocalDB.updateAlarmStatus(event.alarm.key, event.isActive);
     await methodChannel.invokeMethod("cancelAlarm", event.alarm.toJson());
-    EasyLoading.showInfo('Đã huỷ báo thức');
+    emitter(CancelAlarmState());
   }
 }

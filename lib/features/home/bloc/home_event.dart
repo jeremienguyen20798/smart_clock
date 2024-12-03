@@ -37,9 +37,11 @@ class OnCreateAlarmBySpeechEvent extends HomeEvent {
 class OnHandleErrorEvent extends HomeEvent {}
 
 class OnUpdateAlarmEvent extends HomeEvent {
-  Alarm alarm;
+  String idAlarm;
+  DateTime dateTime;
+  bool isActive;
 
-  OnUpdateAlarmEvent(this.alarm);
+  OnUpdateAlarmEvent(this.idAlarm, this.dateTime, this.isActive);
 }
 
 class OnCancelAlarmEvent extends HomeEvent {

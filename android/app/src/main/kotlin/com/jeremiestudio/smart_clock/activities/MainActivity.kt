@@ -37,33 +37,43 @@ class MainActivity : FlutterActivity() {
         initInstance()
     }
 
-    @SuppressLint("SimpleDateFormat", "NewApi")
+    @SuppressLint("SimpleDateFormat")
     @RequiresApi(Build.VERSION_CODES.M)
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger, channel
         ).setMethodCallHandler { call: MethodCall, result: MethodChannel.Result ->
-            if (call.method == "setAlarm" || call.method == "updateAlarm") {
-                val data = call.arguments as Map<*, *>
-                Log.d("TAG", "configureFlutterEngine: $data")
-                val note: String = data["note"].toString()
-                var dateStr = data["dateTime"] as String
-                if (dateStr.length != 26) {
-                    dateStr += "000"
-                }
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
-                val localDateTime = LocalDateTime.parse(dateStr, formatter)
-                val dateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
-                if (dateTime != null) {
+            when (call.method) {
+                "setAlarm" -> {
+                    val data = call.arguments as Map<*, *>
+                    Log.d("TAG", "Set Alarm: $data")
+                    val note: String = data["note"].toString()
+                    val dateStr = data["dateTime"] as String
+                    val dateTime = convertDateToStr(dateStr)
                     setAlarm(dateTime, note)
                     result.success("success")
                 }
-            } else if (call.method == "cancelAlarm") {
-                cancelAlarm(call)
-                result.success("cancel_success")
+                "cancelAlarm" -> {
+                    val data = call.arguments as Map<*, *>
+                    Log.d("TAG", "Cancel Alarm: $data")
+                    cancelAlarm(data)
+                    result.success("cancel_success")
+                }
             }
         }
+    }
+
+    @SuppressLint("NewApi")
+    private fun convertDateToStr(str: String): Date {
+        var dateTimeStr = str
+        if (dateTimeStr.length != 26) {
+            dateTimeStr += "000"
+        }
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        val localDateTime = LocalDateTime.parse(dateTimeStr, formatter)
+        val dateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
+        return dateTime
     }
 
     @SuppressLint("NewApi")
@@ -77,6 +87,7 @@ class MainActivity : FlutterActivity() {
         calendar?.set(Calendar.HOUR_OF_DAY, hour)
         calendar?.set(Calendar.MINUTE, minute)
         calendar?.set(Calendar.SECOND, 0)
+        calendar?.set(Calendar.MILLISECOND, 0)
         val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
         intent.putExtra("notification_id", dateTime.time)
         intent.putExtra("hour", hour)
@@ -94,8 +105,7 @@ class MainActivity : FlutterActivity() {
     }
 
     @SuppressLint("NewApi")
-    private fun cancelAlarm(call: MethodCall) {
-        val data = call.arguments as Map<*, *>
+    private fun cancelAlarm(data: Map<*, *>) {
         var dateStr = data["dateTime"] as String
         if (dateStr.length != 26) {
             dateStr += "000"

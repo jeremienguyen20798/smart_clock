@@ -7,7 +7,8 @@ import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown_state
 class AlarmCountdownCubit extends Cubit<AlarmCountdownState> {
   DateTime dateTime;
   Timer? _timer;
-  AlarmCountdownCubit(this.dateTime) : super(AlarmCountdownState());
+  AlarmCountdownCubit(this.dateTime)
+      : super(AlarmCountdownState(duration: Duration.zero));
 
   void startCountdown() {
     _timer?.cancel();
@@ -20,6 +21,10 @@ class AlarmCountdownCubit extends Cubit<AlarmCountdownState> {
         emit(AlarmCountdownState(duration: duration));
       }
     });
+  }
+
+  void turnOffNotification() {
+    emit(TurnOffNotificationState());
   }
 
   @override
