@@ -23,15 +23,17 @@ class AlarmAdapter extends TypeAdapter<Alarm> {
       isVibrate: fields[3] == null ? true : fields[3] as bool?,
       isDeleteAfterAlarm: fields[4] == null ? false : fields[4] as bool?,
       isActive: fields[5] as bool,
-      typeAlarm: fields[6] as String?,
+      typeAlarm:
+          fields[6] == null ? AppConstants.justOnce : fields[6] as String?,
       sound: fields[7] as String?,
+      createAt: fields[8] as DateTime,
     );
   }
 
   @override
   void write(BinaryWriter writer, Alarm obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.alarmId)
       ..writeByte(1)
@@ -47,7 +49,9 @@ class AlarmAdapter extends TypeAdapter<Alarm> {
       ..writeByte(6)
       ..write(obj.typeAlarm)
       ..writeByte(7)
-      ..write(obj.sound);
+      ..write(obj.sound)
+      ..writeByte(8)
+      ..write(obj.createAt);
   }
 
   @override
@@ -72,8 +76,9 @@ Alarm _$AlarmFromJson(Map<String, dynamic> json) => Alarm(
       isVibrate: json['isVibrate'] as bool? ?? true,
       isDeleteAfterAlarm: json['isDelete'] as bool? ?? false,
       isActive: json['isActive'] as bool,
-      typeAlarm: json['repeat'] as String?,
+      typeAlarm: json['repeat'] as String? ?? AppConstants.justOnce,
       sound: json['sound'] as String?,
+      createAt: DateTime.parse(json['create_at'] as String),
     );
 
 Map<String, dynamic> _$AlarmToJson(Alarm instance) => <String, dynamic>{
@@ -85,4 +90,5 @@ Map<String, dynamic> _$AlarmToJson(Alarm instance) => <String, dynamic>{
       'isActive': instance.isActive,
       'repeat': instance.typeAlarm,
       'sound': instance.sound,
+      'create_at': instance.createAt.toIso8601String(),
     };

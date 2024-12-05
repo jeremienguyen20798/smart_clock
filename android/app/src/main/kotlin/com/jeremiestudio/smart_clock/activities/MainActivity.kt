@@ -60,6 +60,15 @@ class MainActivity : FlutterActivity() {
                     cancelAlarm(data)
                     result.success("cancel_success")
                 }
+                "resetAlarm" -> {
+                    val data = call.arguments as Map<*, *>
+                    Log.d("TAG", "Reset Alarm: $data")
+                    val note: String = data["note"].toString()
+                    val dateStr = data["dateTime"] as String
+                    val dateTime = convertDateToStr(dateStr)
+                    setAlarm(dateTime, note)
+                    result.success("reset_success")
+                }
             }
         }
     }

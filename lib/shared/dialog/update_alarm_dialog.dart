@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_clock/core/utils/string_utils.dart';
 import 'package:smart_clock/data/models/alarm.dart';
-import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown_cubit.dart';
-import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown_view.dart';
+import 'package:smart_clock/shared/widgets/alarm_countdown/cubit/alarm_countdown_cubit.dart';
+import 'package:smart_clock/shared/widgets/alarm_countdown/view/alarm_countdown_view.dart';
 
 import '../../core/constants/app_constants.dart';
 
@@ -30,7 +30,8 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (_) => AlarmCountdownCubit(dateTime),
+        create: (_) =>
+            AlarmCountdownCubit()..startCountdown(dateTime, isActive),
         child: AlertDialog(
           backgroundColor: Colors.white,
           actionsAlignment: MainAxisAlignment.center,
@@ -55,7 +56,10 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
                           style: const TextStyle(
                               fontSize: 18.0, color: Colors.black))
                     ])),
-            subtitle: const AlarmCountdownView(),
+            subtitle: AlarmCountdownView(
+                isNote: false,
+                dateTime: widget.alarm.alarmDateTime,
+                isActive: widget.alarm.isActive),
             trailing: Switch(
                 value: isActive,
                 onChanged: (value) {

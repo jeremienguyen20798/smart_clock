@@ -26,7 +26,6 @@ class AppConstants {
   static const String daily = 'Hằng ngày';
   static const String justOnce = 'Một lần';
   static const String mondayToFriday = 'Thứ hai đến thứ sáu';
-  static const String custom = 'Tuỳ chỉnh';
 
   static const String timeAlarmDemo = '23:00';
   static const String noteAlarmDemo = 'Đọc sách 30 phút';
@@ -41,6 +40,7 @@ class AppConstants {
   static const String ringText = 'Đổ chuông';
   static Alarm demoAlarm = Alarm(
       alarmId: StringUtils.generateAlarmIdStr(),
-      alarmDateTime: DateTime.now().add(const Duration(minutes: 2)),
-      isActive: true);
+      alarmDateTime: DateTime.now().add(const Duration(minutes: 5)),
+      isActive: true,
+      createAt: DateTime.now());
 }

@@ -41,6 +41,10 @@ class Alarm extends HiveObject {
   @HiveField(7)
   String? sound;
 
+  @JsonKey(name: 'create_at')
+  @HiveField(8)
+  DateTime createAt;
+
   Alarm(
       {required this.alarmId,
       required this.alarmDateTime,
@@ -48,8 +52,9 @@ class Alarm extends HiveObject {
       this.isVibrate = true,
       this.isDeleteAfterAlarm = false,
       required this.isActive,
-      this.typeAlarm,
-      this.sound});
+      this.typeAlarm = AppConstants.justOnce,
+      this.sound,
+      required this.createAt});
 
   factory Alarm.fromJson(Map<String, dynamic> json) => _$AlarmFromJson(json);
 
@@ -58,9 +63,9 @@ class Alarm extends HiveObject {
   @override
   String toString() {
     debugPrint(
-        'Log alarm result: $alarmId, dateTime: ${alarmDateTime.toString()}, note: $note');
+        'Log alarm result: $alarmId, dateTime: ${alarmDateTime.toString()}, note: $note, isActive: $isActive');
     return super.toString();
   }
 }
 
-enum AlarmType { daily, justonce, mondaytofriday, custom }
+enum AlarmType { daily, justonce, mondaytofriday }
