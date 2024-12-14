@@ -27,6 +27,4 @@ class AlarmCountdownCubit extends Cubit<AlarmCountdownState> {
     _timer?.cancel();
     return super.close();
   }
-
-  
 }

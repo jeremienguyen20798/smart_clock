@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:intl/intl.dart';
 import 'package:smart_clock/data/models/alarm.dart';
+import 'package:uuid/uuid.dart';
 
 class StringUtils {
   static String formatTime(DateTime dateTime) {
@@ -22,5 +23,9 @@ class StringUtils {
         json.replaceAll(RegExp(r'```'), "").trim().replaceAll('json', '');
     final alarm = Alarm.fromJson(jsonDecode(result));
     return alarm;
+  }
+
+  static String generateAlarmIdStr() {
+    return const Uuid().v1();
   }
 }

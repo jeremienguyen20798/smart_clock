@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown_cubit.dart';
 import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown_state.dart';
 
+import '../../core/constants/app_constants.dart';
+
 class AlarmNotification extends StatelessWidget {
   const AlarmNotification({super.key});
 
@@ -27,7 +29,7 @@ class AlarmNotification extends StatelessWidget {
             child: const ListTile(
                 leading: Icon(Icons.access_alarm, color: Colors.white),
                 title: Text(
-                  'Đổ chuông',
+                  AppConstants.ringText,
                   style: TextStyle(color: Colors.white, fontSize: 14.0),
                 )));
       }

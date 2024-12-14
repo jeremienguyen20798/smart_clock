@@ -18,14 +18,17 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
 
 class MainActivity : FlutterActivity() {
 
     private var calendar: Calendar? = null
     private var alarmManager: AlarmManager? = null
-    private val channel = "com.jeremiestudio.smart_clock/createAlarmBySpeech"
+    private val channel = "create_alarm_by_speech"
 
     @RequiresApi(Build.VERSION_CODES.O_MR1)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,43 +37,81 @@ class MainActivity : FlutterActivity() {
         initInstance()
     }
 
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat", "NewApi")
     @RequiresApi(Build.VERSION_CODES.M)
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger, channel
         ).setMethodCallHandler { call: MethodCall, result: MethodChannel.Result ->
-            if (call.method == "setAlarm") {
+            if (call.method == "setAlarm" || call.method == "updateAlarm") {
                 val data = call.arguments as Map<*, *>
                 Log.d("TAG", "configureFlutterEngine: $data")
                 val note: String = data["note"].toString()
-                val dateStr = data["dateTime"] as String
-                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                val dateTime = simpleDateFormat.parse(dateStr)
-                if (dateTime != null) {
-                    val hour = dateTime.hours
-                    val minute = dateTime.minutes
-                    val date = dateTime.date
-                    val month = dateTime.month
-                    calendar?.set(Calendar.MONTH, month)
-                    calendar?.set(Calendar.DAY_OF_MONTH, date)
-                    calendar?.set(Calendar.HOUR_OF_DAY, hour)
-                    calendar?.set(Calendar.MINUTE, minute)
-                    calendar?.set(Calendar.SECOND, 0)
-                    val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
-                    intent.putExtra("hour", hour)
-                    intent.putExtra("minute", minute)
-                    intent.putExtra("note", note)
-                    val pendingIntent = PendingIntent.getBroadcast(
-                        this@MainActivity, hour + minute, intent, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-                    alarmManager?.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP, calendar!!.timeInMillis, pendingIntent
-                    )
+                var dateStr = data["dateTime"] as String
+                if (dateStr.length != 26) {
+                    dateStr += "000"
                 }
-                result.success("success")
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+                val localDateTime = LocalDateTime.parse(dateStr, formatter)
+                val dateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
+                if (dateTime != null) {
+                    setAlarm(dateTime, note)
+                    result.success("success")
+                }
+            } else if (call.method == "cancelAlarm") {
+                cancelAlarm(call)
+                result.success("cancel_success")
             }
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private fun setAlarm(dateTime: Date, note: String) {
+        val hour = dateTime.hours
+        val minute = dateTime.minutes
+        val date = dateTime.date
+        val month = dateTime.month
+        calendar?.set(Calendar.MONTH, month)
+        calendar?.set(Calendar.DAY_OF_MONTH, date)
+        calendar?.set(Calendar.HOUR_OF_DAY, hour)
+        calendar?.set(Calendar.MINUTE, minute)
+        calendar?.set(Calendar.SECOND, 0)
+        val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
+        intent.putExtra("notification_id", dateTime.time)
+        intent.putExtra("hour", hour)
+        intent.putExtra("minute", minute)
+        intent.putExtra("note", note)
+        val pendingIntent = PendingIntent.getBroadcast(
+            this@MainActivity,
+            dateTime.time.toInt(),
+            intent,
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        alarmManager?.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP, calendar!!.timeInMillis, pendingIntent
+        )
+    }
+
+    @SuppressLint("NewApi")
+    private fun cancelAlarm(call: MethodCall) {
+        val data = call.arguments as Map<*, *>
+        var dateStr = data["dateTime"] as String
+        if (dateStr.length != 26) {
+            dateStr += "000"
+        }
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        val localDateTime = LocalDateTime.parse(dateStr, formatter)
+        val dateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
+        if (dateTime != null) {
+            val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(
+                this@MainActivity,
+                dateTime.time.toInt(),
+                intent,
+                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            alarmManager?.cancel(pendingIntent)
         }
     }
 

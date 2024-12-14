@@ -1,9 +1,11 @@
 class DateTimeUtils {
   static Duration calculateRemainingTime(DateTime dateTime) {
-    if (dateTime.isBefore(DateTime.now())) {
-      int days = DateTime.now().difference(dateTime).inDays + 1;
-      return dateTime.add(Duration(days: days)).difference(DateTime.now());
+    final now = DateTime.now();
+    if (dateTime.isBefore(now)) {
+      int days = now.difference(dateTime).inDays + 1;
+      final nextOccurrence = dateTime.add(Duration(days: days));
+      return nextOccurrence.difference(now);
     }
-    return dateTime.difference(DateTime.now());
+    return dateTime.difference(now);
   }
 }

@@ -59,7 +59,7 @@ class RecognizeTextState extends HomeState {
   final String text;
 
   RecognizeTextState(this.text);
-  
+
   @override
   List<Object?> get props => [text];
 }
@@ -71,4 +71,13 @@ class HandleErrorState extends HomeState {
 
   @override
   List<Object?> get props => [message];
+}
+
+class ReloadAlarmListState extends HomeState {
+  final List<Alarm> alarmList;
+
+  ReloadAlarmListState(this.alarmList);
+
+  @override
+  List<Object?> get props => [alarmList];
 }

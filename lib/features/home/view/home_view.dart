@@ -42,6 +42,8 @@ class HomeView extends StatelessWidget {
       } else if (state is GetTextFromSpeechState) {
         recognizeText = null;
         prompt = state.result;
+      } else if (state is ReloadAlarmListState) {
+        alarmList = state.alarmList;
       }
       return Scaffold(
         backgroundColor: Colors.white,

@@ -44,7 +44,7 @@ class Alarm extends HiveObject {
   Alarm(
       {required this.alarmId,
       required this.alarmDateTime,
-      this.note = AppConstants.alarmTab,
+      this.note = AppConstants.alarm,
       this.isVibrate = true,
       this.isDeleteAfterAlarm = false,
       required this.isActive,
@@ -54,19 +54,6 @@ class Alarm extends HiveObject {
   factory Alarm.fromJson(Map<String, dynamic> json) => _$AlarmFromJson(json);
 
   Map<String, dynamic> toJson() => _$AlarmToJson(this);
-
-  Map toMap() {
-    return {
-      "alarm_id": alarmId,
-      "dateTime": alarmDateTime.toString(),
-      "note": note == null || note!.isEmpty ? AppConstants.alarmTab : note,
-      "isVibrate": isVibrate ?? true,
-      "isDelete": isDeleteAfterAlarm ?? false,
-      "isActive": isActive,
-      "type": typeAlarm,
-      "sound": sound,
-    };
-  }
 
   @override
   String toString() {

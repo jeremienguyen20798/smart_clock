@@ -19,7 +19,7 @@ class AlarmAdapter extends TypeAdapter<Alarm> {
     return Alarm(
       alarmId: fields[0] as String,
       alarmDateTime: fields[1] as DateTime,
-      note: fields[2] == null ? AppConstants.alarmTab : fields[2] as String?,
+      note: fields[2] == null ? AppConstants.alarm : fields[2] as String?,
       isVibrate: fields[3] == null ? true : fields[3] as bool?,
       isDeleteAfterAlarm: fields[4] == null ? false : fields[4] as bool?,
       isActive: fields[5] as bool,
@@ -68,7 +68,7 @@ class AlarmAdapter extends TypeAdapter<Alarm> {
 Alarm _$AlarmFromJson(Map<String, dynamic> json) => Alarm(
       alarmId: json['alarm_id'] as String,
       alarmDateTime: DateTime.parse(json['dateTime'] as String),
-      note: json['note'] as String? ?? AppConstants.alarmTab,
+      note: json['note'] as String? ?? AppConstants.alarm,
       isVibrate: json['isVibrate'] as bool? ?? true,
       isDeleteAfterAlarm: json['isDelete'] as bool? ?? false,
       isActive: json['isActive'] as bool,

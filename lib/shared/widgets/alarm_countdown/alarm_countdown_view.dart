@@ -3,19 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown_cubit.dart';
 import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown_state.dart';
 
-class AlarmCountdown extends StatefulWidget {
+class AlarmCountdownView extends StatefulWidget {
   final TextStyle? textStyle;
+  final bool? isNote;
 
-  const AlarmCountdown({
+  const AlarmCountdownView({
     super.key,
     this.textStyle,
+    this.isNote,
   });
 
   @override
-  State<AlarmCountdown> createState() => _AlarmCountdownState();
+  State<AlarmCountdownView> createState() => _AlarmCountdownViewState();
 }
 
-class _AlarmCountdownState extends State<AlarmCountdown> {
+class _AlarmCountdownViewState extends State<AlarmCountdownView> {
   @override
   void initState() {
     context.read<AlarmCountdownCubit>().startCountdown();
@@ -31,11 +33,13 @@ class _AlarmCountdownState extends State<AlarmCountdown> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-                margin: const EdgeInsets.symmetric(horizontal: 6.0),
-                height: 12.0,
-                width: 1.0,
-                color: Colors.grey),
+            widget.isNote == true
+                ? Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 6.0),
+                    height: 12.0,
+                    width: 1.0,
+                    color: Colors.grey)
+                : const SizedBox(),
             Text(
               'Đang tính toán...',
               style: widget.textStyle ??
@@ -54,11 +58,13 @@ class _AlarmCountdownState extends State<AlarmCountdown> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-              margin: const EdgeInsets.symmetric(horizontal: 6.0),
-              height: 12.0,
-              width: 1.0,
-              color: Colors.grey),
+          widget.isNote == true
+              ? Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 6.0),
+                  height: 12.0,
+                  width: 1.0,
+                  color: Colors.grey)
+              : const SizedBox(),
           Text(countdownText,
               style: widget.textStyle ??
                   const TextStyle(overflow: TextOverflow.ellipsis),
