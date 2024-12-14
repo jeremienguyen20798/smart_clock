@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.jeremiestudio.smart_clock.FullscreenActivity
 import com.jeremiestudio.smart_clock.R
 import com.jeremiestudio.smart_clock.receivers.DeleteAlarmReceiver
 
@@ -56,6 +57,8 @@ class AlarmService : Service() {
         }
         val deleteAlarmIntent: PendingIntent =
             PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_MUTABLE)
+        val fullScreenIntent = Intent(context, FullscreenActivity::class.java)
+        val fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_MUTABLE)
         val notification =
             NotificationCompat.Builder(
                 context,
@@ -64,6 +67,8 @@ class AlarmService : Service() {
                 .setSmallIcon(R.drawable.baseline_notifications_active_24)
                 .setContentTitle(ContextCompat.getString(context, R.string.alarm_title))
                 .setContentText(message)
+                .setFullScreenIntent(fullScreenPendingIntent, true)
+                .setOngoing(true)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

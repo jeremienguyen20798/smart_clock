@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_clock/core/constants/app_constants.dart';
-import 'package:smart_clock/core/extensions/alarm_type_extension.dart';
 import 'package:smart_clock/core/utils/dialog_utils.dart';
 import 'package:smart_clock/core/utils/string_utils.dart';
 import 'package:smart_clock/features/home/bloc/home_bloc.dart';
@@ -89,7 +88,7 @@ class _ItemAlarmState extends State<ItemAlarm> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(widget.alarm.typeAlarm ?? AlarmType.justonce.content(),
+                  Text(widget.alarm.typeAlarm ?? AppConstants.justOnce,
                       style: const TextStyle(
                         fontSize: 14.0,
                         color: Colors.grey,

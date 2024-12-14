@@ -9,7 +9,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getString
 import com.jeremiestudio.smart_clock.R
@@ -30,7 +29,6 @@ class MainActivity : FlutterActivity() {
     private var alarmManager: AlarmManager? = null
     private val channel = "create_alarm_by_speech"
 
-    @RequiresApi(Build.VERSION_CODES.O_MR1)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
@@ -38,7 +36,6 @@ class MainActivity : FlutterActivity() {
     }
 
     @SuppressLint("SimpleDateFormat")
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(
@@ -108,8 +105,8 @@ class MainActivity : FlutterActivity() {
             intent,
             PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        alarmManager?.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP, calendar!!.timeInMillis, pendingIntent
+        alarmManager?.setInexactRepeating(
+            AlarmManager.RTC_WAKEUP, calendar!!.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent
         )
     }
 
@@ -139,7 +136,6 @@ class MainActivity : FlutterActivity() {
         alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
     }
 
-    @RequiresApi(Build.VERSION_CODES.O_MR1)
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_HIGH
@@ -150,7 +146,9 @@ class MainActivity : FlutterActivity() {
             ).apply {
                 description = getString(context, R.string.desc_channel)
                 setSound(null, null)
-                setShowWhenLocked(true)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                    setShowWhenLocked(true)
+                }
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             }
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
