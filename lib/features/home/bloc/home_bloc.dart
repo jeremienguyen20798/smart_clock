@@ -7,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_clock/core/constants/app_constants.dart';
+import 'package:smart_clock/core/utils/string_utils.dart';
 import 'package:smart_clock/data/local_db/local_db.dart';
 import 'package:smart_clock/data/models/alarm.dart';
 import 'package:smart_clock/di.dart';
@@ -108,6 +109,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           .call("$headPrompt${event.prompt}$lastPrompt${DateTime.now()}");
       EasyLoading.dismiss();
       if (alarm != null) {
+        alarm.alarmId = StringUtils.generateAlarmIdStr();
         final result =
             await methodChannel.invokeMethod('setAlarm', alarm.toJson());
         if (result != null) {

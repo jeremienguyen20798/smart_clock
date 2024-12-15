@@ -105,7 +105,7 @@ class MainActivity : FlutterActivity() {
             this@MainActivity,
             dateTime.time.toInt(),
             intent,
-            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager?.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP, calendar!!.timeInMillis, pendingIntent
@@ -127,7 +127,7 @@ class MainActivity : FlutterActivity() {
                 this@MainActivity,
                 dateTime.time.toInt(),
                 intent,
-                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
             alarmManager?.cancel(pendingIntent)
         }

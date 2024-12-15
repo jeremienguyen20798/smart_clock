@@ -58,7 +58,7 @@ class AlarmService : Service() {
         val deleteAlarmIntent: PendingIntent =
             PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_MUTABLE)
         val fullScreenIntent = Intent(context, FullscreenActivity::class.java)
-        val fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_MUTABLE)
+        val fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE)
         val notification =
             NotificationCompat.Builder(
                 context,
