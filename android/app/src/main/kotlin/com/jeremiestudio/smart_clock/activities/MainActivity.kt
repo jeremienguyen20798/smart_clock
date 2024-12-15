@@ -51,12 +51,14 @@ class MainActivity : FlutterActivity() {
                     setAlarm(dateTime, note)
                     result.success("success")
                 }
+
                 "cancelAlarm" -> {
                     val data = call.arguments as Map<*, *>
                     Log.d("TAG", "Cancel Alarm: $data")
                     cancelAlarm(data)
                     result.success("cancel_success")
                 }
+
                 "resetAlarm" -> {
                     val data = call.arguments as Map<*, *>
                     Log.d("TAG", "Reset Alarm: $data")
@@ -105,8 +107,8 @@ class MainActivity : FlutterActivity() {
             intent,
             PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
-        alarmManager?.setInexactRepeating(
-            AlarmManager.RTC_WAKEUP, calendar!!.timeInMillis, AlarmManager.INTERVAL_DAY, pendingIntent
+        alarmManager?.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP, calendar!!.timeInMillis, pendingIntent
         )
     }
 
