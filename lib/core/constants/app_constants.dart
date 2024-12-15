@@ -4,7 +4,7 @@ import 'package:smart_clock/data/models/alarm.dart';
 class AppConstants {
   static const String appName = 'Smart Clock';
   //Home Page
-  static const String homeTitleText = 'Chào, Nguyễn Hoàng Phúc';
+  static const String homeTitleText = 'Chào bạn, ngày mới tốt lành';
   static const String alarm = 'Báo thức';
   static const String deleteAlarm = 'Xoá';
   static const String turnOffNotification = 'Tắt thông báo';
