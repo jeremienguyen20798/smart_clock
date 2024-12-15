@@ -8,8 +8,6 @@ extension AlarmTypeExtension on AlarmType {
         return AppConstants.daily;
       case AlarmType.justonce:
         return AppConstants.justOnce;
-      case AlarmType.custom:
-        return AppConstants.custom;
       case AlarmType.mondaytofriday:
         return AppConstants.mondayToFriday;
     }
@@ -21,10 +19,8 @@ extension AlarmTypeExtension on AlarmType {
         return 0;
       case AlarmType.justonce:
         return 1;
-      case AlarmType.custom:
-        return 2;
       case AlarmType.mondaytofriday:
-        return 3;
+        return 2;
     }
   }
 }

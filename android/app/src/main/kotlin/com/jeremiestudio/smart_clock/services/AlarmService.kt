@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.jeremiestudio.smart_clock.FullscreenActivity
 import com.jeremiestudio.smart_clock.R
 import com.jeremiestudio.smart_clock.receivers.DeleteAlarmReceiver
 
@@ -31,7 +32,7 @@ class AlarmService : Service() {
 
     @SuppressLint("DefaultLocale")
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val notificationId : Long = intent.getLongExtra("notification_id", 0)
+        val notificationId: Long = intent.getLongExtra("notification_id", 0)
         val hour: Int = intent.getIntExtra("hour", 0)
         val minute: Int = intent.getIntExtra("minute", 0)
         val noteAlarm: String = intent.getStringExtra("note").toString()
@@ -56,6 +57,8 @@ class AlarmService : Service() {
         }
         val deleteAlarmIntent: PendingIntent =
             PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_MUTABLE)
+        val fullScreenIntent = Intent(context, FullscreenActivity::class.java)
+        val fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE)
         val notification =
             NotificationCompat.Builder(
                 context,
@@ -64,10 +67,11 @@ class AlarmService : Service() {
                 .setSmallIcon(R.drawable.baseline_notifications_active_24)
                 .setContentTitle(ContextCompat.getString(context, R.string.alarm_title))
                 .setContentText(message)
+                .setFullScreenIntent(fullScreenPendingIntent, true)
+                .setOngoing(true)
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setOngoing(true)
                 .addAction(
                     R.drawable.baseline_access_alarm_24, ContextCompat.getString(
                         context,
@@ -75,10 +79,12 @@ class AlarmService : Service() {
                     ), deleteAlarmIntent
                 )
                 .build()
-
         with(NotificationManagerCompat.from(context)) {
             if (ActivityCompat.checkSelfPermission(
                     context, android.Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    context,
+                    android.Manifest.permission.FOREGROUND_SERVICE
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 return@with

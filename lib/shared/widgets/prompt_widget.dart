@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_constants.dart';
+import '../../core/constants/app_constants.dart';
 
 class PromptWidget extends StatefulWidget {
   final String input;

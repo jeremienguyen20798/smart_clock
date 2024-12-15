@@ -5,7 +5,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_clock/data/repositories/remote_config_repository_impl.dart';
 import 'package:smart_clock/data/repositories/speech_to_text_repository_impl.dart';
+import 'package:smart_clock/data/repositories/tts_repositories.dart';
 import 'package:smart_clock/domain/repository/remote_config_repository.dart';
+import 'package:smart_clock/domain/repository/tts_repository.dart';
 import 'package:smart_clock/hive_registrar.g.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -27,6 +29,8 @@ class DependencyInjection {
       getIt.registerSingleton<SpeechToTextRepository>(repository);
       final remoteConfigRepo = RemoteConfigRepositoryImpl();
       getIt.registerSingleton<RemoteConfigRepository>(remoteConfigRepo);
+      TTSRepository ttsRepository = TTSRepositories();
+      getIt.registerSingleton<TTSRepository>(ttsRepository);
     }
   }
 }

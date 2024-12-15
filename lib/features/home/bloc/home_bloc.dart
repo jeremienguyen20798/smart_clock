@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_clock/core/constants/app_constants.dart';
+import 'package:smart_clock/core/utils/string_utils.dart';
 import 'package:smart_clock/data/local_db/local_db.dart';
 import 'package:smart_clock/data/models/alarm.dart';
 import 'package:smart_clock/di.dart';
@@ -30,8 +33,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<OnCreateAlarmBySpeechEvent>(_onCreateAlarmBySpeech);
     on<OnHandleErrorEvent>(_onHandleError);
     on<OnUpdateAlarmEvent>(_onUpdateAlarm);
-    on<OnCancelAlarmEvent>(_onCancelAlarm);
+    on<OnControlAlarmByToggleSwitchEvent>(_onControlAlarmByToggleSwitch);
     on<OnReloadAlarmListEvent>(_onReloadAlarmList);
+    on<OnTurnOffAlarmNotificationEvent>(_turnOffNotificationAndCancelAlarm);
   }
 
   Future<void> _onRequestPermission(
@@ -42,8 +46,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onGetAlarmList(
       GetAlarmListEvent event, Emitter<HomeState> emitter) async {
-    final dataList = await SmartClockLocalDB.getAlarmList();
+    List<Alarm> dataList = await SmartClockLocalDB.getAlarmList();
     alarmList = dataList;
+    dataList.sort((a, b) => b.createAt.compareTo(a.createAt));
     emitter(GetAlarmListState(dataList));
   }
 
@@ -104,6 +109,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           .call("$headPrompt${event.prompt}$lastPrompt${DateTime.now()}");
       EasyLoading.dismiss();
       if (alarm != null) {
+        alarm.alarmId = StringUtils.generateAlarmIdStr();
         final result =
             await methodChannel.invokeMethod('setAlarm', alarm.toJson());
         if (result != null) {
@@ -122,22 +128,50 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onUpdateAlarm(
       OnUpdateAlarmEvent event, Emitter<HomeState> emitter) async {
-    final Alarm result = event.alarm;
-    SmartClockLocalDB.updateAlarm(result);
-    await methodChannel.invokeMethod('updateAlarm', result.toJson());
-    add(OnReloadAlarmListEvent());
+    final Alarm? alarm = await SmartClockLocalDB.getAlarmFromId(event.idAlarm);
+    if (alarm != null) {
+      final result =
+          await methodChannel.invokeMethod("cancelAlarm", alarm.toJson());
+      if (result != null) {
+        alarm.alarmDateTime = event.dateTime;
+        alarm.isActive = event.isActive;
+        SmartClockLocalDB.updateAlarm(alarm);
+        await methodChannel.invokeMethod('setAlarm', alarm.toJson());
+      }
+      emitter(UpdateAlarmState(alarm));
+    }
   }
+
+  Future<void> _onControlAlarmByToggleSwitch(
+      OnControlAlarmByToggleSwitchEvent event,
+      Emitter<HomeState> emitter) async {
+    if (event.alarm.isActive) {
+      await SmartClockLocalDB.updateAlarmStatus(
+          event.alarm.key, event.isActive);
+      await methodChannel.invokeMethod("cancelAlarm", event.alarm.toJson());
+    } else {
+      if (event.alarm.alarmDateTime.isBefore(DateTime.now())) {
+        int tomorrow = DateTime.now().day + 1;
+        int distance = tomorrow - event.alarm.alarmDateTime.day;
+        log("Distance: $distance");
+        DateTime dateTime = event.alarm.alarmDateTime;
+        event.alarm.alarmDateTime = dateTime.add(Duration(days: distance));
+        event.alarm.save();
+      }
+      await SmartClockLocalDB.updateAlarmStatus(
+          event.alarm.key, event.isActive);
+      await methodChannel.invokeMethod("resetAlarm", event.alarm.toJson());
+    }
+    emitter(UpdateAlarmByToggleSwitchState(event.alarm));
+  }
+
+  Future<void> _turnOffNotificationAndCancelAlarm(
+      OnTurnOffAlarmNotificationEvent event,
+      Emitter<HomeState> emitter) async {}
 
   Future<void> _onReloadAlarmList(
       OnReloadAlarmListEvent event, Emitter<HomeState> emitter) async {
     final dataList = await SmartClockLocalDB.getAlarmList();
     emitter(ReloadAlarmListState(dataList));
-  }
-
-  Future<void> _onCancelAlarm(
-      OnCancelAlarmEvent event, Emitter<HomeState> emitter) async {
-    SmartClockLocalDB.updateAlarmStatus(event.alarm.key, event.isActive);
-    await methodChannel.invokeMethod("cancelAlarm", event.alarm.toJson());
-    EasyLoading.showInfo('Đã huỷ báo thức');
   }
 }

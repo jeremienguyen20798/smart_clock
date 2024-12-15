@@ -9,7 +9,6 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getString
 import com.jeremiestudio.smart_clock.R
@@ -30,40 +29,59 @@ class MainActivity : FlutterActivity() {
     private var alarmManager: AlarmManager? = null
     private val channel = "create_alarm_by_speech"
 
-    @RequiresApi(Build.VERSION_CODES.O_MR1)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
         initInstance()
     }
 
-    @SuppressLint("SimpleDateFormat", "NewApi")
-    @RequiresApi(Build.VERSION_CODES.M)
+    @SuppressLint("SimpleDateFormat")
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger, channel
         ).setMethodCallHandler { call: MethodCall, result: MethodChannel.Result ->
-            if (call.method == "setAlarm" || call.method == "updateAlarm") {
-                val data = call.arguments as Map<*, *>
-                Log.d("TAG", "configureFlutterEngine: $data")
-                val note: String = data["note"].toString()
-                var dateStr = data["dateTime"] as String
-                if (dateStr.length != 26) {
-                    dateStr += "000"
-                }
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
-                val localDateTime = LocalDateTime.parse(dateStr, formatter)
-                val dateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
-                if (dateTime != null) {
+            when (call.method) {
+                "setAlarm" -> {
+                    val data = call.arguments as Map<*, *>
+                    Log.d("TAG", "Set Alarm: $data")
+                    val note: String = data["note"].toString()
+                    val dateStr = data["dateTime"] as String
+                    val dateTime = convertDateToStr(dateStr)
                     setAlarm(dateTime, note)
                     result.success("success")
                 }
-            } else if (call.method == "cancelAlarm") {
-                cancelAlarm(call)
-                result.success("cancel_success")
+
+                "cancelAlarm" -> {
+                    val data = call.arguments as Map<*, *>
+                    Log.d("TAG", "Cancel Alarm: $data")
+                    cancelAlarm(data)
+                    result.success("cancel_success")
+                }
+
+                "resetAlarm" -> {
+                    val data = call.arguments as Map<*, *>
+                    Log.d("TAG", "Reset Alarm: $data")
+                    val note: String = data["note"].toString()
+                    val dateStr = data["dateTime"] as String
+                    val dateTime = convertDateToStr(dateStr)
+                    setAlarm(dateTime, note)
+                    result.success("reset_success")
+                }
             }
         }
+    }
+
+    @SuppressLint("NewApi")
+    private fun convertDateToStr(str: String): Date {
+        var dateTimeStr = str
+        if (dateTimeStr.length != 26) {
+            dateTimeStr += "000"
+        }
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        val localDateTime = LocalDateTime.parse(dateTimeStr, formatter)
+        val dateTime = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant())
+        return dateTime
     }
 
     @SuppressLint("NewApi")
@@ -77,6 +95,7 @@ class MainActivity : FlutterActivity() {
         calendar?.set(Calendar.HOUR_OF_DAY, hour)
         calendar?.set(Calendar.MINUTE, minute)
         calendar?.set(Calendar.SECOND, 0)
+        calendar?.set(Calendar.MILLISECOND, 0)
         val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
         intent.putExtra("notification_id", dateTime.time)
         intent.putExtra("hour", hour)
@@ -86,7 +105,7 @@ class MainActivity : FlutterActivity() {
             this@MainActivity,
             dateTime.time.toInt(),
             intent,
-            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager?.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP, calendar!!.timeInMillis, pendingIntent
@@ -94,8 +113,7 @@ class MainActivity : FlutterActivity() {
     }
 
     @SuppressLint("NewApi")
-    private fun cancelAlarm(call: MethodCall) {
-        val data = call.arguments as Map<*, *>
+    private fun cancelAlarm(data: Map<*, *>) {
         var dateStr = data["dateTime"] as String
         if (dateStr.length != 26) {
             dateStr += "000"
@@ -109,7 +127,7 @@ class MainActivity : FlutterActivity() {
                 this@MainActivity,
                 dateTime.time.toInt(),
                 intent,
-                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
             alarmManager?.cancel(pendingIntent)
         }
@@ -120,7 +138,6 @@ class MainActivity : FlutterActivity() {
         alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
     }
 
-    @RequiresApi(Build.VERSION_CODES.O_MR1)
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_HIGH
@@ -131,7 +148,9 @@ class MainActivity : FlutterActivity() {
             ).apply {
                 description = getString(context, R.string.desc_channel)
                 setSound(null, null)
-                setShowWhenLocked(true)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                    setShowWhenLocked(true)
+                }
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
             }
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager

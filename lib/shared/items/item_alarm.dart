@@ -1,16 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_clock/core/constants/app_constants.dart';
-import 'package:smart_clock/core/extensions/alarm_type_extension.dart';
 import 'package:smart_clock/core/utils/dialog_utils.dart';
 import 'package:smart_clock/core/utils/string_utils.dart';
 import 'package:smart_clock/features/home/bloc/home_bloc.dart';
-import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown_cubit.dart';
-import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown_view.dart';
-import 'package:smart_clock/shared/widgets/alarm_notification.dart';
+import 'package:smart_clock/shared/widgets/alarm_countdown/alarm_countdown.dart';
 
 import '../../data/models/alarm.dart';
 import '../../features/home/bloc/home_event.dart';
+import '../widgets/alarm_countdown/cubit/alarm_countdown_cubit.dart';
 
 class ItemAlarm extends StatefulWidget {
   final Alarm alarm;
@@ -29,18 +29,18 @@ class ItemAlarm extends StatefulWidget {
 class _ItemAlarmState extends State<ItemAlarm> {
   bool isAlarmActive = false;
   DateTime dateTime = DateTime.now();
+  Alarm? alarm;
 
   @override
   void initState() {
-    isAlarmActive = widget.alarm.isActive;
-    dateTime = widget.alarm.alarmDateTime;
+    initItemAlarm();
     super.initState();
   }
 
   @override
   void didUpdateWidget(covariant ItemAlarm oldWidget) {
-    if (oldWidget.alarm.alarmDateTime != widget.alarm.alarmDateTime) {
-      dateTime = widget.alarm.alarmDateTime;
+    if (oldWidget.alarm != widget.alarm) {
+      initItemAlarm();
     }
     super.didUpdateWidget(oldWidget);
   }
@@ -48,12 +48,11 @@ class _ItemAlarmState extends State<ItemAlarm> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (_) => AlarmCountdownCubit(dateTime),
+        create: (_) => AlarmCountdownCubit(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const AlarmNotification(),
             ListTile(
               onLongPress: () {
                 context
@@ -61,8 +60,10 @@ class _ItemAlarmState extends State<ItemAlarm> {
                     .add(OnLongClickItemEvent(widget.alarm));
               },
               onTap: () {
-                DialogUtils.showEditAlarmDialog(context, widget.alarm, (alarm) {
-                  context.read<HomeBloc>().add(OnUpdateAlarmEvent(alarm));
+                DialogUtils.showEditAlarmDialog(context, widget.alarm,
+                    (dateTime, isActive) {
+                  context.read<HomeBloc>().add(OnUpdateAlarmEvent(
+                      widget.alarm.alarmId, dateTime, isActive));
                 });
               },
               title: RichText(
@@ -87,19 +88,12 @@ class _ItemAlarmState extends State<ItemAlarm> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(widget.alarm.typeAlarm ?? AlarmType.justonce.content(),
+                  Text(widget.alarm.typeAlarm ?? AppConstants.justOnce,
                       style: const TextStyle(
                         fontSize: 14.0,
                         color: Colors.grey,
                       )),
-                  const Expanded(
-                      child: AlarmCountdownView(
-                          isNote: true,
-                          textStyle: TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.grey,
-                            overflow: TextOverflow.ellipsis,
-                          )))
+                  Expanded(child: AlarmCountdown(alarm: alarm ?? widget.alarm))
                 ],
               ),
               trailing: widget.isDelete == null
@@ -108,9 +102,9 @@ class _ItemAlarmState extends State<ItemAlarm> {
                       onChanged: (value) {
                         setState(() {
                           isAlarmActive = value;
-                          context
-                              .read<HomeBloc>()
-                              .add(OnCancelAlarmEvent(widget.alarm, value));
+                          context.read<HomeBloc>().add(
+                              OnControlAlarmByToggleSwitchEvent(
+                                  widget.alarm, value));
                         });
                       })
                   : Checkbox(
@@ -123,5 +117,14 @@ class _ItemAlarmState extends State<ItemAlarm> {
             ),
           ],
         ));
+  }
+
+  void initItemAlarm() {
+    setState(() {
+      isAlarmActive = widget.alarm.isActive;
+      dateTime = widget.alarm.alarmDateTime;
+      alarm = widget.alarm;
+      log('Alarm: ${alarm.toString()}');
+    });
   }
 }

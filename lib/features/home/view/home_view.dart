@@ -7,7 +7,7 @@ import 'package:smart_clock/features/home/bloc/home_bloc.dart';
 import 'package:smart_clock/features/home/bloc/home_event.dart';
 import 'package:smart_clock/features/home/bloc/home_state.dart';
 import 'package:smart_clock/features/home/view/alarm_list.dart';
-import 'package:smart_clock/features/home/view/prompt_widget.dart';
+import 'package:smart_clock/shared/widgets/prompt_widget.dart';
 import 'package:smart_clock/features/settings/view/settings_page.dart';
 
 List<Alarm> alarmList = [];
