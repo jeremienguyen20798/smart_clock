@@ -12,8 +12,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import com.jeremiestudio.smart_clock.FullscreenActivity
 import com.jeremiestudio.smart_clock.R
+import com.jeremiestudio.smart_clock.activities.MainActivity
 import com.jeremiestudio.smart_clock.receivers.DeleteAlarmReceiver
 
 class AlarmService : Service() {
@@ -24,6 +24,7 @@ class AlarmService : Service() {
         super.onCreate()
         mediaPlayer = MediaPlayer.create(this, R.raw.sound)
         mediaPlayer?.isLooping = true
+        mediaPlayer?.setVolume(0.0F, 1.0F)
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -32,6 +33,7 @@ class AlarmService : Service() {
 
     @SuppressLint("DefaultLocale")
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        val alarmId = intent.getStringExtra("alarm_id")
         val notificationId: Long = intent.getLongExtra("notification_id", 0)
         val hour: Int = intent.getIntExtra("hour", 0)
         val minute: Int = intent.getIntExtra("minute", 0)
@@ -39,7 +41,8 @@ class AlarmService : Service() {
         showNotification(
             notificationId.toInt(),
             this,
-            "$noteAlarm - ${String.format("%02d", hour)}:${String.format("%02d", minute)}"
+            "$noteAlarm - ${String.format("%02d", hour)}:${String.format("%02d", minute)}",
+            alarmId,
         )
         return START_STICKY
     }
@@ -50,15 +53,20 @@ class AlarmService : Service() {
         mediaPlayer?.release()
     }
 
-    private fun showNotification(id: Int, context: Context, message: String) {
-        val intent = Intent(context, DeleteAlarmReceiver::class.java).apply {
-            action = "TURN_OFF_ALARM"
+    private fun showNotification(id: Int, context: Context, message: String, alarmId: String?) {
+//        val intent = Intent(context, DeleteAlarmReceiver::class.java).apply {
+//            action = "TURN_OFF_ALARM"
+//            putExtra("EXTRA_NOTIFICATION_ID", id)
+//            putExtra("ALARM_ID", alarmId)
+//        }
+//        val deleteAlarmIntent: PendingIntent =
+//            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_IMMUTABLE)
+        val cancelIntent = Intent(context, MainActivity::class.java).apply {
             putExtra("EXTRA_NOTIFICATION_ID", id)
+            putExtra("ALARM_ID", alarmId)
         }
-        val deleteAlarmIntent: PendingIntent =
-            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_MUTABLE)
-        val fullScreenIntent = Intent(context, FullscreenActivity::class.java)
-        val fullScreenPendingIntent = PendingIntent.getActivity(context, 0, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE)
+        val contentPendingIntent =
+            PendingIntent.getActivity(context, id, cancelIntent, PendingIntent.FLAG_IMMUTABLE)
         val notification =
             NotificationCompat.Builder(
                 context,
@@ -67,16 +75,15 @@ class AlarmService : Service() {
                 .setSmallIcon(R.drawable.baseline_notifications_active_24)
                 .setContentTitle(ContextCompat.getString(context, R.string.alarm_title))
                 .setContentText(message)
-                .setFullScreenIntent(fullScreenPendingIntent, true)
                 .setOngoing(true)
-                .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(contentPendingIntent)
                 .addAction(
                     R.drawable.baseline_access_alarm_24, ContextCompat.getString(
                         context,
                         R.string.delete_alarm
-                    ), deleteAlarmIntent
+                    ), contentPendingIntent
                 )
                 .build()
         with(NotificationManagerCompat.from(context)) {

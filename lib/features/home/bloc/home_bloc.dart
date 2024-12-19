@@ -20,6 +20,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   List<Alarm> alarmList = [];
   List<Alarm> alarmDeleteList = [];
   final methodChannel = const MethodChannel('create_alarm_by_speech');
+  
   final pref = getIt.get<SharedPreferences>();
 
   HomeBloc() : super(InitHomeState()) {
@@ -35,7 +36,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<OnUpdateAlarmEvent>(_onUpdateAlarm);
     on<OnControlAlarmByToggleSwitchEvent>(_onControlAlarmByToggleSwitch);
     on<OnReloadAlarmListEvent>(_onReloadAlarmList);
-    on<OnTurnOffAlarmNotificationEvent>(_turnOffNotificationAndCancelAlarm);
   }
 
   Future<void> _onRequestPermission(
@@ -164,10 +164,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
     emitter(UpdateAlarmByToggleSwitchState(event.alarm));
   }
-
-  Future<void> _turnOffNotificationAndCancelAlarm(
-      OnTurnOffAlarmNotificationEvent event,
-      Emitter<HomeState> emitter) async {}
 
   Future<void> _onReloadAlarmList(
       OnReloadAlarmListEvent event, Emitter<HomeState> emitter) async {

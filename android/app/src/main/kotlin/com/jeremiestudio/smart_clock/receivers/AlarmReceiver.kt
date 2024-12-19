@@ -13,11 +13,13 @@ class AlarmReceiver : BroadcastReceiver() {
     @SuppressLint("DefaultLocale", "NewApi")
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("TAG", "onReceive: AlarmReceiver is started")
+        val alarmId = intent.getStringExtra("alarm_id")
         val notificationId: Long = intent.getLongExtra("notification_id", 0)
         val hour: Int = intent.getIntExtra("hour", 0)
         val minute: Int = intent.getIntExtra("minute", 0)
         val noteAlarm: String = intent.getStringExtra("note").toString()
         val alarmIntent = Intent(context, AlarmService::class.java)
+        alarmIntent.putExtra("alarm_id", alarmId)
         alarmIntent.putExtra("notification_id", notificationId)
         alarmIntent.putExtra("hour", hour)
         alarmIntent.putExtra("minute", minute)

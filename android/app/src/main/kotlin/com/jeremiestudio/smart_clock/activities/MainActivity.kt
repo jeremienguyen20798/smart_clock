@@ -5,6 +5,7 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getString
 import com.jeremiestudio.smart_clock.R
 import com.jeremiestudio.smart_clock.receivers.AlarmReceiver
+import com.jeremiestudio.smart_clock.services.AlarmService
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
@@ -28,11 +30,39 @@ class MainActivity : FlutterActivity() {
     private var calendar: Calendar? = null
     private var alarmManager: AlarmManager? = null
     private val channel = "create_alarm_by_speech"
+    private val androidChannel = "android_handle_alarm"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
         initInstance()
+        intent.apply {
+            val alarmId = getStringExtra("ALARM_ID")
+            val notificationId = getIntExtra("EXTRA_NOTIFICATION_ID", 0)
+            if (alarmId != null) {
+                val notificationManager =
+                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.cancel(notificationId)
+                val stopAlarmIntent = Intent(context, AlarmService::class.java)
+                context.stopService(stopAlarmIntent)
+                flutterEngine?.dartExecutor?.let {
+                    MethodChannel(it.binaryMessenger, androidChannel).apply {
+                        // Gửi dữ liệu từ Android native về Flutter
+                        sendDataToFlutter(alarmId)
+                    }
+                }
+            }
+
+        }
+    }
+
+    private fun sendDataToFlutter(data: String) {
+        flutterEngine?.dartExecutor?.binaryMessenger?.let {
+            MethodChannel(it, androidChannel).invokeMethod(
+                "sendDataToFlutter",
+                data
+            )
+        }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -45,10 +75,11 @@ class MainActivity : FlutterActivity() {
                 "setAlarm" -> {
                     val data = call.arguments as Map<*, *>
                     Log.d("TAG", "Set Alarm: $data")
+                    val alarmId = data["alarm_id"].toString()
                     val note: String = data["note"].toString()
                     val dateStr = data["dateTime"] as String
                     val dateTime = convertDateToStr(dateStr)
-                    setAlarm(dateTime, note)
+                    setAlarm(dateTime, note, alarmId)
                     result.success("success")
                 }
 
@@ -62,10 +93,11 @@ class MainActivity : FlutterActivity() {
                 "resetAlarm" -> {
                     val data = call.arguments as Map<*, *>
                     Log.d("TAG", "Reset Alarm: $data")
+                    val alarmId = data["alarm_id"].toString()
                     val note: String = data["note"].toString()
                     val dateStr = data["dateTime"] as String
                     val dateTime = convertDateToStr(dateStr)
-                    setAlarm(dateTime, note)
+                    setAlarm(dateTime, note, alarmId)
                     result.success("reset_success")
                 }
             }
@@ -85,7 +117,7 @@ class MainActivity : FlutterActivity() {
     }
 
     @SuppressLint("NewApi")
-    private fun setAlarm(dateTime: Date, note: String) {
+    private fun setAlarm(dateTime: Date, note: String, alarmId: String) {
         val hour = dateTime.hours
         val minute = dateTime.minutes
         val date = dateTime.date
@@ -97,6 +129,7 @@ class MainActivity : FlutterActivity() {
         calendar?.set(Calendar.SECOND, 0)
         calendar?.set(Calendar.MILLISECOND, 0)
         val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
+        intent.putExtra("alarm_id", alarmId)
         intent.putExtra("notification_id", dateTime.time)
         intent.putExtra("hour", hour)
         intent.putExtra("minute", minute)

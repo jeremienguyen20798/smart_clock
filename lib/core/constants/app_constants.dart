@@ -40,7 +40,9 @@ class AppConstants {
   static const String ringText = 'Đổ chuông';
   static Alarm demoAlarm = Alarm(
       alarmId: StringUtils.generateAlarmIdStr(),
-      alarmDateTime: DateTime.now().add(const Duration(minutes: 5)),
+      alarmDateTime: DateTime.now().add(const Duration(minutes: 2)),
       isActive: true,
       createAt: DateTime.now());
+
+  static const String deleteAlarmAfterNotify = 'delete_alarm_after_notification';
 }
