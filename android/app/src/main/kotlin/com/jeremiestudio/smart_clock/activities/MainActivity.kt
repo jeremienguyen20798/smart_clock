@@ -5,6 +5,7 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getString
 import com.jeremiestudio.smart_clock.R
 import com.jeremiestudio.smart_clock.receivers.AlarmReceiver
+import com.jeremiestudio.smart_clock.services.AlarmService
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
@@ -28,11 +30,30 @@ class MainActivity : FlutterActivity() {
     private var calendar: Calendar? = null
     private var alarmManager: AlarmManager? = null
     private val channel = "create_alarm_by_speech"
+    private val androidChannel = "android_handle_alarm"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
         initInstance()
+        intent.apply {
+            val notificationId = getIntExtra("EXTRA_NOTIFICATION_ID", 0)
+            val alarmId = getStringExtra("ALARM_ID")
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancel(notificationId)
+            val stopAlarmIntent = Intent(context, AlarmService::class.java)
+            context.stopService(stopAlarmIntent)
+            if (alarmId != null) {
+                sendDataToFlutter(alarmId)
+            }
+        }
+    }
+
+    private fun sendDataToFlutter(alarmId: String) {
+        flutterEngine?.dartExecutor?.binaryMessenger?.let {
+            MethodChannel(it, androidChannel).invokeMethod("sendDataToFlutter", alarmId)
+        }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -49,7 +70,8 @@ class MainActivity : FlutterActivity() {
                     val dateStr = data["dateTime"] as String
                     val dateTime = convertDateToStr(dateStr)
                     val typeAlarm = enumValueOf<AlarmType>(data["repeat"].toString())
-                    setAlarm(dateTime, note, typeAlarm)
+                    val alarmId = data["alarm_id"].toString()
+                    setAlarm(dateTime, note, alarmId, typeAlarm)
                     result.success("success")
                 }
 
@@ -67,7 +89,8 @@ class MainActivity : FlutterActivity() {
                     val dateStr = data["dateTime"] as String
                     val dateTime = convertDateToStr(dateStr)
                     val typeAlarm = enumValueOf<AlarmType>(data["repeat"].toString())
-                    setAlarm(dateTime, note, typeAlarm)
+                    val alarmId = data["alarm_id"].toString()
+                    setAlarm(dateTime, note, alarmId, typeAlarm)
                     result.success("reset_success")
                 }
             }
@@ -86,11 +109,10 @@ class MainActivity : FlutterActivity() {
         return dateTime
     }
 
-    @SuppressLint("NewApi")
-    private fun setAlarm(dateTime: Date, note: String, typeAlarmType: AlarmType) {
+    private fun setAlarm(dateTime: Date, note: String, alarmId: String, typeAlarmType: AlarmType) {
         when (typeAlarmType) {
             AlarmType.justonce -> {
-                setOnlyOnceAlarm(dateTime, note)
+                setOnlyOnceAlarm(dateTime, note, alarmId)
             }
 
             AlarmType.daily -> {
@@ -101,20 +123,18 @@ class MainActivity : FlutterActivity() {
             }
 
             AlarmType.mondaytofriday -> {
-                return
+                setWeeklyAlarm(dateTime, note)
             }
         }
     }
 
     @SuppressLint("NewApi")
-    private fun setOnlyOnceAlarm(date: Date, note: String) {
+    private fun setOnlyOnceAlarm(date: Date, note: String, alarmId: String) {
         Log.d("TAG", "setOnlyOnceAlarm: $date - $note")
+        val month = date.month
+        val dayOfMonth = date.date
         val hour = date.hours
         val minute = date.minutes
-        val dayOfMonth = date.date
-        val month = date.month
-        val year = date.year
-        calendar?.set(Calendar.YEAR, year)
         calendar?.set(Calendar.MONTH, month)
         calendar?.set(Calendar.DAY_OF_MONTH, dayOfMonth)
         calendar?.set(Calendar.HOUR_OF_DAY, hour)
@@ -123,6 +143,7 @@ class MainActivity : FlutterActivity() {
         calendar?.set(Calendar.MILLISECOND, 0)
         val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
         intent.putExtra("notification_id", date.time)
+        intent.putExtra("alarm_id", alarmId)
         intent.putExtra("hour", hour)
         intent.putExtra("minute", minute)
         intent.putExtra("note", note)
@@ -144,6 +165,7 @@ class MainActivity : FlutterActivity() {
         calendar?.set(Calendar.HOUR_OF_DAY, hour)
         calendar?.set(Calendar.MINUTE, minute)
         calendar?.set(Calendar.SECOND, 0)
+        calendar?.set(Calendar.MILLISECOND, 0)
         val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
         intent.putExtra("notification_id", date.time)
         intent.putExtra("hour", hour)
@@ -183,7 +205,7 @@ class MainActivity : FlutterActivity() {
         alarmManager?.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar!!.timeInMillis,
-            AlarmManager.INTERVAL_DAY * 7,
+            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
     }

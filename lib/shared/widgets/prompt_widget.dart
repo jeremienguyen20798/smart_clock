@@ -28,6 +28,7 @@ class _PromptWidgetState extends State<PromptWidget> {
         autofocus: true,
         maxLines: 3,
         controller: promptController,
+        readOnly: true,
         decoration: const InputDecoration(
           labelText: AppConstants.titlePrompt,
           hintText: AppConstants.messagePrompt,

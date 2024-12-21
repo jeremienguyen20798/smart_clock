@@ -37,4 +37,6 @@ class AppConstants {
       isActive: true,
       typeAlarm: AlarmType.justonce.name,
       createAt: DateTime.now());
+
+  static const String deleteAlarmAfterNotify = 'delete_alarm_after_notification';
 }
