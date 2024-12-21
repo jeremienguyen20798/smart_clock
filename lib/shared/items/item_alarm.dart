@@ -88,11 +88,13 @@ class _ItemAlarmState extends State<ItemAlarm> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(widget.alarm.typeAlarm ?? AppConstants.justOnce,
-                      style: const TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.grey,
-                      )),
+                  widget.alarm.typeAlarm != null
+                      ? Text(StringUtils.enumValueOf(widget.alarm.typeAlarm!),
+                          style: const TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.grey,
+                          ))
+                      : const SizedBox(),
                   Expanded(child: AlarmCountdown(alarm: alarm ?? widget.alarm))
                 ],
               ),

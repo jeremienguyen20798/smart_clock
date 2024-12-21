@@ -12,15 +12,4 @@ extension AlarmTypeExtension on AlarmType {
         return AppConstants.mondayToFriday;
     }
   }
-
-  int value() {
-    switch (this) {
-      case AlarmType.daily:
-        return 0;
-      case AlarmType.justonce:
-        return 1;
-      case AlarmType.mondaytofriday:
-        return 2;
-    }
-  }
 }
