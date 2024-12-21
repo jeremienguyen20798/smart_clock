@@ -21,7 +21,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   List<Alarm> alarmList = [];
   List<Alarm> alarmDeleteList = [];
   final methodChannel = const MethodChannel('create_alarm_by_speech');
-  
+
   final pref = getIt.get<SharedPreferences>();
 
   HomeBloc() : super(InitHomeState()) {

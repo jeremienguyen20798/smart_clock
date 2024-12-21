@@ -33,7 +33,7 @@ class AppConstants {
   static const String messagePrompt = 'Tạo báo thức với yêu cầu của bạn';
   static Alarm demoAlarm = Alarm(
       alarmId: StringUtils.generateAlarmIdStr(),
-      alarmDateTime: DateTime.now().add(const Duration(minutes: 2)),
+      alarmDateTime: DateTime.now().add(const Duration(minutes: 5)),
       isActive: true,
       typeAlarm: AlarmType.justonce.name,
       createAt: DateTime.now());

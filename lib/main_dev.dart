@@ -24,9 +24,9 @@ void main() async {
   if (deleteAlarmAfterNotification ?? true) {
     channel.setMethodCallHandler((call) async {
       if (call.method == 'sendDataToFlutter') {
-        final data = call.arguments;
-        if (data != null) {
-          await SmartClockLocalDB.deleteAlarmById(data);
+        final id = call.arguments;
+        if (id != null) {
+          await SmartClockLocalDB.updateAlarmStatus(id, false);
         }
       }
     });
