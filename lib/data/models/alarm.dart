@@ -52,7 +52,7 @@ class Alarm extends HiveObject {
       this.isVibrate = true,
       this.isDeleteAfterAlarm = false,
       required this.isActive,
-      this.typeAlarm = AppConstants.justOnce,
+      this.typeAlarm,
       this.sound,
       required this.createAt});
 

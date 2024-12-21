@@ -52,3 +52,5 @@ class OnControlAlarmByToggleSwitchEvent extends HomeEvent {
 }
 
 class OnReloadAlarmListEvent extends HomeEvent {}
+
+class OnTurnOffAlarmNotificationEvent extends HomeEvent {}

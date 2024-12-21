@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:android_power_manager/android_power_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -74,16 +75,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emitter(ConfirmDeleteAlarmState(alarmList));
   }
 
-  void _getTextFromSpeech(
-      OnGetTextFromSpeechEvent event, Emitter<HomeState> emitter) {
+  Future<void> _getTextFromSpeech(
+      OnGetTextFromSpeechEvent event, Emitter<HomeState> emitter) async {
     if (kDebugMode) {
       add(OnCreateAlarmBySpeechEvent(""));
     } else {
-      StartListeningUsecase().call((text) {
-        add(OnRecognizeTextEvent(text));
-      }, (input) {
-        add(OnCreateAlarmBySpeechEvent(input));
-      });
+      var isIgnoringOptimize =
+          await AndroidPowerManager.isIgnoringBatteryOptimizations;
+      if (isIgnoringOptimize ?? true) {
+        StartListeningUsecase().call((text) {
+          add(OnRecognizeTextEvent(text));
+        }, (input) {
+          add(OnCreateAlarmBySpeechEvent(input));
+        });
+      } else {
+        AndroidPowerManager.requestIgnoreBatteryOptimizations();
+      }
     }
   }
 
