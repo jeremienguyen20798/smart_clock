@@ -94,6 +94,9 @@ class MainActivity : FlutterActivity() {
             }
 
             AlarmType.daily -> {
+                if (dateTime.time < System.currentTimeMillis()) {
+                    dateTime.seconds += 86400
+                }
                 setDailyAlarm(dateTime, note)
             }
 
@@ -155,7 +158,7 @@ class MainActivity : FlutterActivity() {
         alarmManager?.setRepeating(
             AlarmManager.RTC_WAKEUP,
             calendar!!.timeInMillis,
-            AlarmManager.INTERVAL_DAY * 7,
+            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
     }

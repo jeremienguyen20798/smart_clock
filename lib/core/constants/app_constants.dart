@@ -42,5 +42,6 @@ class AppConstants {
       alarmId: StringUtils.generateAlarmIdStr(),
       alarmDateTime: DateTime.now().add(const Duration(minutes: 5)),
       isActive: true,
+      typeAlarm: AlarmType.justonce.name,
       createAt: DateTime.now());
 }
