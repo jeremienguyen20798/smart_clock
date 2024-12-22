@@ -160,8 +160,12 @@ class MainActivity : FlutterActivity() {
 
     private fun setDailyAlarm(date: Date, note: String) {
         Log.d("TAG", "setDailyAlarm: $date - $note")
-        val hour = date.hours
-        val minute = date.minutes
+        var hour = date.hours
+        var minute = date.minutes
+        if (date.time <= System.currentTimeMillis()) {
+            hour += 23
+            minute += 59
+        }
         calendar?.set(Calendar.HOUR_OF_DAY, hour)
         calendar?.set(Calendar.MINUTE, minute)
         calendar?.set(Calendar.SECOND, 0)
