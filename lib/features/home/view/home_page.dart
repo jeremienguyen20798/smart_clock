@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:smart_clock/features/home/bloc/home_bloc.dart';
-import 'package:smart_clock/features/home/bloc/home_event.dart';
+import 'package:smart_clock/core/base/bloc/base_bloc.dart';
+import 'package:smart_clock/core/base/bloc/base_state.dart';
 import 'package:smart_clock/features/home/view/home_view.dart';
 
 class HomePage extends StatelessWidget {
@@ -9,11 +9,13 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => HomeBloc()
-        ..add(RequestPermissionEvent())
-        ..add(GetAlarmListEvent()),
-      child: const HomeView(),
-    );
+    return BlocListener<BaseBloc, BaseState>(
+        listener: (context, state) {
+          if (state is NoInternetState) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(const SnackBar(content: Text('Không có kết nối mạng')));
+          }
+        },
+        child: const HomeView());
   }
 }
