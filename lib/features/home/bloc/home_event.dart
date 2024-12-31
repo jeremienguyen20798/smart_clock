@@ -40,8 +40,10 @@ class OnUpdateAlarmEvent extends HomeEvent {
   String idAlarm;
   DateTime dateTime;
   bool isActive;
+  AlarmType alarmType;
 
-  OnUpdateAlarmEvent(this.idAlarm, this.dateTime, this.isActive);
+  OnUpdateAlarmEvent(
+      this.idAlarm, this.dateTime, this.isActive, this.alarmType);
 }
 
 class OnControlAlarmByToggleSwitchEvent extends HomeEvent {

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:intl/intl.dart';
-import 'package:smart_clock/core/extensions/alarm_type_extension.dart';
 import 'package:smart_clock/data/models/alarm.dart';
 import 'package:uuid/uuid.dart';
 
@@ -30,8 +29,13 @@ class StringUtils {
     return const Uuid().v1();
   }
 
-  static String enumValueOf(String name) {
+  // static String enumValueOf(String name) {
+  //   final result = AlarmType.values.firstWhere((e) => e.name == name);
+  //   return result.content();
+  // }
+
+  static AlarmType alarmTypeValueOf(String name) {
     final result = AlarmType.values.firstWhere((e) => e.name == name);
-    return result.content();
+    return result;
   }
 }

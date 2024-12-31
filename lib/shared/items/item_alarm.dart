@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_clock/core/constants/app_constants.dart';
+import 'package:smart_clock/core/extensions/alarm_type_extension.dart';
 import 'package:smart_clock/core/utils/dialog_utils.dart';
 import 'package:smart_clock/core/utils/string_utils.dart';
 import 'package:smart_clock/features/home/bloc/home_bloc.dart';
@@ -61,9 +62,9 @@ class _ItemAlarmState extends State<ItemAlarm> {
               },
               onTap: () {
                 DialogUtils.showEditAlarmDialog(context, widget.alarm,
-                    (dateTime, isActive) {
+                    (dateTime, isActive, typeAlarm) {
                   context.read<HomeBloc>().add(OnUpdateAlarmEvent(
-                      widget.alarm.alarmId, dateTime, isActive));
+                      widget.alarm.alarmId, dateTime, isActive, typeAlarm));
                 });
               },
               title: RichText(
@@ -89,7 +90,7 @@ class _ItemAlarmState extends State<ItemAlarm> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   widget.alarm.typeAlarm != null
-                      ? Text(StringUtils.enumValueOf(widget.alarm.typeAlarm!),
+                      ? Text(StringUtils.alarmTypeValueOf(widget.alarm.typeAlarm!).content(),
                           style: const TextStyle(
                             fontSize: 14.0,
                             color: Colors.grey,

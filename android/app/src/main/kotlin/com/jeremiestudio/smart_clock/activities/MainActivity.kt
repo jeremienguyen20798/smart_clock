@@ -5,7 +5,6 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -14,7 +13,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getString
 import com.jeremiestudio.smart_clock.R
 import com.jeremiestudio.smart_clock.receivers.AlarmReceiver
-import com.jeremiestudio.smart_clock.services.AlarmService
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
@@ -30,30 +28,11 @@ class MainActivity : FlutterActivity() {
     private var calendar: Calendar? = null
     private var alarmManager: AlarmManager? = null
     private val channel = "create_alarm_by_speech"
-    private val androidChannel = "android_handle_alarm"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
         initInstance()
-        intent.apply {
-            val notificationId = getIntExtra("EXTRA_NOTIFICATION_ID", 0)
-            val alarmId = getStringExtra("ALARM_ID")
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.cancel(notificationId)
-            val stopAlarmIntent = Intent(context, AlarmService::class.java)
-            context.stopService(stopAlarmIntent)
-            if (alarmId != null) {
-                sendDataToFlutter(alarmId)
-            }
-        }
-    }
-
-    private fun sendDataToFlutter(alarmId: String) {
-        flutterEngine?.dartExecutor?.binaryMessenger?.let {
-            MethodChannel(it, androidChannel).invokeMethod("sendDataToFlutter", alarmId)
-        }
     }
 
     @SuppressLint("SimpleDateFormat")

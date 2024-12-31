@@ -142,6 +142,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (result != null) {
         alarm.alarmDateTime = event.dateTime;
         alarm.isActive = event.isActive;
+        alarm.typeAlarm = event.alarmType.name;
         SmartClockLocalDB.updateAlarm(alarm);
         await methodChannel.invokeMethod('setAlarm', alarm.toJson());
       }
