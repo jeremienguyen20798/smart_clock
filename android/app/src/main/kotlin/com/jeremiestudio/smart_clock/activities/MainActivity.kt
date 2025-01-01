@@ -27,7 +27,7 @@ class MainActivity : FlutterActivity() {
 
     private var calendar: Calendar? = null
     private var alarmManager: AlarmManager? = null
-    private val channel = "create_alarm_by_speech"
+    private val channel = "smart_lock_channel"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +71,11 @@ class MainActivity : FlutterActivity() {
                     val alarmId = data["alarm_id"].toString()
                     setAlarm(dateTime, note, alarmId, typeAlarm)
                     result.success("reset_success")
+                }
+
+                "cancelRingAlarmById" -> {
+                    val data = call.arguments as List<*>
+                    cancelRingAlarms(data)
                 }
             }
         }
@@ -130,40 +135,42 @@ class MainActivity : FlutterActivity() {
             this@MainActivity,
             date.time.toInt(),
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager?.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP, calendar!!.timeInMillis, pendingIntent
         )
     }
 
+    @SuppressLint("NewApi")
     private fun setDailyAlarm(date: Date, note: String) {
         Log.d("TAG", "setDailyAlarm: $date - $note")
-        var hour = date.hours
-        var minute = date.minutes
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
         if (date.time <= System.currentTimeMillis()) {
-            hour += 23
-            minute += 59
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
-        calendar?.set(Calendar.HOUR_OF_DAY, hour)
-        calendar?.set(Calendar.MINUTE, minute)
-        calendar?.set(Calendar.SECOND, 0)
-        calendar?.set(Calendar.MILLISECOND, 0)
+        calendar.set(Calendar.HOUR_OF_DAY, hour)
+        calendar.set(Calendar.MINUTE, minute)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
         val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
         intent.putExtra("notification_id", date.time)
         intent.putExtra("hour", hour)
         intent.putExtra("minute", minute)
         intent.putExtra("note", note)
+        intent.putExtra("repeat", AlarmType.daily.toString())
         val pendingIntent = PendingIntent.getBroadcast(
             this@MainActivity,
             date.time.toInt(),
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        alarmManager?.setRepeating(
+        alarmManager?.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-            calendar!!.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
+            calendar.timeInMillis,
             pendingIntent
         )
     }
@@ -183,7 +190,7 @@ class MainActivity : FlutterActivity() {
             this@MainActivity,
             date.time.toInt(),
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager?.setRepeating(
             AlarmManager.RTC_WAKEUP,
@@ -207,6 +214,21 @@ class MainActivity : FlutterActivity() {
             val pendingIntent = PendingIntent.getBroadcast(
                 this@MainActivity,
                 dateTime.time.toInt(),
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            alarmManager?.cancel(pendingIntent)
+        }
+    }
+
+    private fun cancelRingAlarms(dataList: List<*>) {
+        Log.d("TAG", "Cancel Alarm By ID")
+        for (item in dataList) {
+            val date = convertDateToStr(item.toString())
+            val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(
+                this@MainActivity,
+                date.time.toInt(),
                 intent,
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )

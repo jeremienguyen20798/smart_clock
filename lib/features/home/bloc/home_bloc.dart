@@ -20,7 +20,7 @@ import 'package:smart_clock/features/home/bloc/home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   List<Alarm> alarmList = [];
   List<Alarm> alarmDeleteList = [];
-  final methodChannel = const MethodChannel('create_alarm_by_speech');
+  final methodChannel = const MethodChannel('smart_lock_channel');
 
   final pref = getIt.get<SharedPreferences>();
 
@@ -68,11 +68,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emitter(CancelDeleteAlarmState(alarmDeleteList));
   }
 
-  void _onConfirmDeleteAlarm(
-      OnConfirmDeleteAlarmEvent event, Emitter<HomeState> emitter) {
+  Future<void> _onConfirmDeleteAlarm(
+      OnConfirmDeleteAlarmEvent event, Emitter<HomeState> emitter) async {
     SmartClockLocalDB.deleteAlarm(event.alarmList);
     alarmList.removeWhere((item) => alarmDeleteList.contains(item));
     emitter(ConfirmDeleteAlarmState(alarmList));
+    final alarmJsonList =
+        event.alarmList.map((item) => item.alarmDateTime.toString()).toList();
+    await methodChannel.invokeMethod("cancelRingAlarmById", alarmJsonList);
   }
 
   Future<void> _getTextFromSpeech(

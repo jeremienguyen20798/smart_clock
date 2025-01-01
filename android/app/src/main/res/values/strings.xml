@@ -5,9 +5,5 @@
     <string name="channel_name">"Jeremie Studio"</string>
     <string name="alarm_title">Android Alarm</string>
     <string name="delete_alarm">Tắt báo thức</string>
-    <string name="title_activity_fullscreen">FullscreenActivity</string>
-    <string name="dummy_button">Tắt báo thức</string>
-    <string name="dummy_content">Báo thức sắp báo</string>
-    <string name="wake_up">Wake Up</string>
-    <string name="alarm_datetime">07:30</string>
+    <string name="create_new_alarm">Đặt mới</string>
 </resources>
