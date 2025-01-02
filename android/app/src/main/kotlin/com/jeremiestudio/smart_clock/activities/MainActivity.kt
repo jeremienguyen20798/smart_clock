@@ -100,9 +100,6 @@ class MainActivity : FlutterActivity() {
             }
 
             AlarmType.daily -> {
-                if (dateTime.time < System.currentTimeMillis()) {
-                    dateTime.seconds += 86400
-                }
                 setDailyAlarm(dateTime, note)
             }
 
@@ -255,6 +252,8 @@ class MainActivity : FlutterActivity() {
                     setShowWhenLocked(true)
                 }
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+                enableLights(true)
+                enableVibration(true)
             }
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)

@@ -63,8 +63,11 @@ class _ItemAlarmState extends State<ItemAlarm> {
               onTap: () {
                 DialogUtils.showEditAlarmDialog(context, widget.alarm,
                     (dateTime, isActive, typeAlarm) {
-                  context.read<HomeBloc>().add(OnUpdateAlarmEvent(
-                      widget.alarm.alarmId, dateTime, isActive, typeAlarm));
+                  setState(() {
+                    isAlarmActive = isActive;
+                    context.read<HomeBloc>().add(OnUpdateAlarmEvent(
+                        widget.alarm.alarmId, dateTime, isActive, typeAlarm));
+                  });
                 });
               },
               title: RichText(
@@ -90,7 +93,9 @@ class _ItemAlarmState extends State<ItemAlarm> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   widget.alarm.typeAlarm != null
-                      ? Text(StringUtils.alarmTypeValueOf(widget.alarm.typeAlarm!).content(),
+                      ? Text(
+                          StringUtils.alarmTypeValueOf(widget.alarm.typeAlarm!)
+                              .content(),
                           style: const TextStyle(
                             fontSize: 14.0,
                             color: Colors.grey,

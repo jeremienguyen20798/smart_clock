@@ -25,6 +25,7 @@ class HomeView extends StatelessWidget {
       if (state is GetAlarmListState) {
         prompt = null;
         alarmList = state.alarms;
+        context.read<HomeBloc>().add(RequestPermissionEvent());
       } else if (state is DeleteItemAlarmState) {
         isDelete = state.deleteAlarms.isNotEmpty;
         deleteAlarms = state.deleteAlarms;

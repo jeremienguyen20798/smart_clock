@@ -46,9 +46,6 @@
         <service android:name=".services.AlarmService" />
 
         <activity
-            android:showWhenLocked="true"
-            android:showOnLockScreen="true"
-            android:turnScreenOn="true"
             android:name=".activities.MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"

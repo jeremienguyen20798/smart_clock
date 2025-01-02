@@ -139,7 +139,7 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
                       setState(() {
                         Navigator.pop(context, {
                           "dateTime": dateTime,
-                          "isActive": isActive,
+                          "isActive": true,
                           "typeAlarm": typeAlarm
                         });
                       });
