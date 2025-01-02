@@ -1,4 +1,4 @@
-import 'dart:developer';
+//import 'dart:developer';
 
 import 'package:android_power_manager/android_power_manager.dart';
 import 'package:flutter/foundation.dart';
@@ -161,10 +161,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           event.alarm.key, event.isActive);
       await methodChannel.invokeMethod("cancelAlarm", event.alarm.toJson());
     } else {
+      if (event.alarm.alarmDateTime.day != DateTime.now().day) {
+        event.alarm.alarmDateTime.add(const Duration(days: 1));
+      }
       if (event.alarm.alarmDateTime.isBefore(DateTime.now())) {
         int tomorrow = DateTime.now().day + 1;
         int distance = tomorrow - event.alarm.alarmDateTime.day;
-        log("Distance: $distance");
+        // log("Distance: $distance");
         DateTime dateTime = event.alarm.alarmDateTime;
         event.alarm.alarmDateTime = dateTime.add(Duration(days: distance));
         event.alarm.save();
