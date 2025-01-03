@@ -13,7 +13,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.jeremiestudio.smart_clock.R
-import com.jeremiestudio.smart_clock.activities.MainActivity
 import com.jeremiestudio.smart_clock.receivers.DeleteAlarmReceiver
 
 class AlarmService : Service() {
@@ -54,19 +53,12 @@ class AlarmService : Service() {
     }
 
     private fun showNotification(id: Int, context: Context, message: String, alarmId: String?) {
-//        val intent = Intent(context, DeleteAlarmReceiver::class.java).apply {
-//            action = "TURN_OFF_ALARM"
-//            putExtra("EXTRA_NOTIFICATION_ID", id)
-//            putExtra("ALARM_ID", alarmId)
-//        }
-//        val deleteAlarmIntent: PendingIntent =
-//            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_IMMUTABLE)
-        val cancelIntent = Intent(context, MainActivity::class.java).apply {
-            putExtra("EXTRA_NOTIFICATION_ID", id)
+        val intent = Intent(context, DeleteAlarmReceiver::class.java).apply {
+            action = "TURN_OFF_ALARM"
             putExtra("ALARM_ID", alarmId)
         }
-        val contentPendingIntent =
-            PendingIntent.getActivity(context, id, cancelIntent, PendingIntent.FLAG_IMMUTABLE)
+        val deleteAlarmIntent: PendingIntent =
+            PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_IMMUTABLE)
         val notification =
             NotificationCompat.Builder(
                 context,
@@ -78,12 +70,17 @@ class AlarmService : Service() {
                 .setOngoing(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(contentPendingIntent)
                 .addAction(
                     R.drawable.baseline_access_alarm_24, ContextCompat.getString(
                         context,
                         R.string.delete_alarm
-                    ), contentPendingIntent
+                    ), deleteAlarmIntent
+                )
+                .addAction(
+                    R.drawable.baseline_access_alarm_24, ContextCompat.getString(
+                        context,
+                        R.string.create_new_alarm
+                    ), deleteAlarmIntent
                 )
                 .build()
         with(NotificationManagerCompat.from(context)) {

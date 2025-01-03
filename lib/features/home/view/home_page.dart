@@ -11,7 +11,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => HomeBloc()
-        ..add(RequestPermissionEvent())
+       // ..add(RequestPermissionEvent())
         ..add(GetAlarmListEvent()),
       child: const HomeView(),
     );

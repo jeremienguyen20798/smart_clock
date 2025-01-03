@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -24,6 +25,7 @@ class HomeView extends StatelessWidget {
       if (state is GetAlarmListState) {
         prompt = null;
         alarmList = state.alarms;
+        context.read<HomeBloc>().add(RequestPermissionEvent());
       } else if (state is DeleteItemAlarmState) {
         isDelete = state.deleteAlarms.isNotEmpty;
         deleteAlarms = state.deleteAlarms;
@@ -98,7 +100,8 @@ class HomeView extends StatelessWidget {
                 onPressed: () {
                   context.read<HomeBloc>().add(OnGetTextFromSpeechEvent());
                 },
-                child: const Icon(Icons.mic),
+                child:
+                    kDebugMode ? const Icon(Icons.add) : const Icon(Icons.mic),
               ),
         persistentFooterAlignment: AlignmentDirectional.center,
         persistentFooterButtons: isDelete

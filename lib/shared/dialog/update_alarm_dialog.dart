@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_clock/core/extensions/alarm_type_extension.dart';
 import 'package:smart_clock/core/utils/string_utils.dart';
 import 'package:smart_clock/data/models/alarm.dart';
 import 'package:smart_clock/shared/widgets/alarm_countdown/cubit/alarm_countdown_cubit.dart';
@@ -20,6 +21,7 @@ class UpdateAlarmDialog extends StatefulWidget {
 class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
   DateTime dateTime = DateTime.now();
   bool isActive = false;
+  AlarmType? typeAlarm;
 
   @override
   void initState() {
@@ -68,27 +70,47 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
                   });
                 }),
           ),
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: 100.0,
-            child: CupertinoDatePicker(
-                initialDateTime: widget.alarm.alarmDateTime,
-                onDateTimeChanged: (value) {
-                  setState(() {
-                    dateTime = DateTime(
-                        DateTime.now().year,
-                        DateTime.now().month,
-                        DateTime.now().day,
-                        value.hour,
-                        value.minute,
-                        value.second,
-                        value.millisecond,
-                        value.microsecond);
-                  });
-                },
-                mode: CupertinoDatePickerMode.time,
-                use24hFormat: true),
-          ),
+          content: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 100.0,
+                  child: CupertinoDatePicker(
+                      initialDateTime: widget.alarm.alarmDateTime,
+                      onDateTimeChanged: (value) {
+                        setState(() {
+                          dateTime = DateTime(
+                              DateTime.now().year,
+                              DateTime.now().month,
+                              DateTime.now().day,
+                              value.hour,
+                              value.minute,
+                              value.second,
+                              value.millisecond,
+                              value.microsecond);
+                        });
+                      },
+                      mode: CupertinoDatePickerMode.time,
+                      use24hFormat: true),
+                ),
+                const SizedBox(height: 32.0),
+                DropdownButtonFormField<AlarmType>(
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: AppConstants.typeRepeatAlarm),
+                    items: AlarmType.values
+                        .map((item) => DropdownMenuItem<AlarmType>(
+                            value: item, child: Text(item.content())))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        typeAlarm = value;
+                      });
+                    },
+                    value: typeAlarm),
+              ]),
           actions: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -115,8 +137,11 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
                   child: MaterialButton(
                     onPressed: () {
                       setState(() {
-                        Navigator.pop(context,
-                            {"dateTime": dateTime, "isActive": isActive});
+                        Navigator.pop(context, {
+                          "dateTime": dateTime,
+                          "isActive": true,
+                          "typeAlarm": typeAlarm
+                        });
                       });
                     },
                     elevation: 0.0,
@@ -140,5 +165,7 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
   void initData() {
     dateTime = widget.alarm.alarmDateTime;
     isActive = widget.alarm.isActive;
+    typeAlarm = StringUtils.alarmTypeValueOf(
+        widget.alarm.typeAlarm ?? AppConstants.justOnce);
   }
 }

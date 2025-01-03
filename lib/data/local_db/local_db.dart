@@ -1,7 +1,19 @@
+import 'package:flutter/services.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:smart_clock/data/models/alarm.dart';
 
 class SmartClockLocalDB {
+  static const _channel = MethodChannel('alarm_channel');
+
+  static Future<void> initialize() async {
+    _channel.setMethodCallHandler((call) async {
+      if (call.method == 'updateAlarmStatus') {
+        final alarmId = call.arguments['alarmId'] as String;
+        updateAlarmStatus(alarmId, false);
+      }
+    });
+  }
+
   static Future<void> createAlarm(Alarm alarm) async {
     final alarmBox = await Hive.openBox<Alarm>('alarms');
     alarmBox.put(alarm.alarmId, alarm);

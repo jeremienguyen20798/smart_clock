@@ -5,7 +5,6 @@ import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -14,7 +13,6 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getString
 import com.jeremiestudio.smart_clock.R
 import com.jeremiestudio.smart_clock.receivers.AlarmReceiver
-import com.jeremiestudio.smart_clock.services.AlarmService
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
@@ -29,31 +27,12 @@ class MainActivity : FlutterActivity() {
 
     private var calendar: Calendar? = null
     private var alarmManager: AlarmManager? = null
-    private val channel = "create_alarm_by_speech"
-    private val androidChannel = "android_handle_alarm"
+    private val channel = "smart_lock_channel"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createNotificationChannel()
         initInstance()
-        intent.apply {
-            val notificationId = getIntExtra("EXTRA_NOTIFICATION_ID", 0)
-            val alarmId = getStringExtra("ALARM_ID")
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.cancel(notificationId)
-            val stopAlarmIntent = Intent(context, AlarmService::class.java)
-            context.stopService(stopAlarmIntent)
-            if (alarmId != null) {
-                sendDataToFlutter(alarmId)
-            }
-        }
-    }
-
-    private fun sendDataToFlutter(alarmId: String) {
-        flutterEngine?.dartExecutor?.binaryMessenger?.let {
-            MethodChannel(it, androidChannel).invokeMethod("sendDataToFlutter", alarmId)
-        }
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -93,6 +72,11 @@ class MainActivity : FlutterActivity() {
                     setAlarm(dateTime, note, alarmId, typeAlarm)
                     result.success("reset_success")
                 }
+
+                "cancelRingAlarmById" -> {
+                    val data = call.arguments as List<*>
+                    cancelRingAlarms(data)
+                }
             }
         }
     }
@@ -116,9 +100,6 @@ class MainActivity : FlutterActivity() {
             }
 
             AlarmType.daily -> {
-                if (dateTime.time < System.currentTimeMillis()) {
-                    dateTime.seconds += 86400
-                }
                 setDailyAlarm(dateTime, note)
             }
 
@@ -151,36 +132,42 @@ class MainActivity : FlutterActivity() {
             this@MainActivity,
             date.time.toInt(),
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager?.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP, calendar!!.timeInMillis, pendingIntent
         )
     }
 
+    @SuppressLint("NewApi")
     private fun setDailyAlarm(date: Date, note: String) {
         Log.d("TAG", "setDailyAlarm: $date - $note")
-        val hour = date.hours
-        val minute = date.minutes
-        calendar?.set(Calendar.HOUR_OF_DAY, hour)
-        calendar?.set(Calendar.MINUTE, minute)
-        calendar?.set(Calendar.SECOND, 0)
-        calendar?.set(Calendar.MILLISECOND, 0)
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        if (date.time <= System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1)
+        }
+        calendar.set(Calendar.HOUR_OF_DAY, hour)
+        calendar.set(Calendar.MINUTE, minute)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
         val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
         intent.putExtra("notification_id", date.time)
         intent.putExtra("hour", hour)
         intent.putExtra("minute", minute)
         intent.putExtra("note", note)
+        intent.putExtra("repeat", AlarmType.daily.toString())
         val pendingIntent = PendingIntent.getBroadcast(
             this@MainActivity,
             date.time.toInt(),
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        alarmManager?.setRepeating(
+        alarmManager?.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-            calendar!!.timeInMillis,
-            AlarmManager.INTERVAL_DAY,
+            calendar.timeInMillis,
             pendingIntent
         )
     }
@@ -200,7 +187,7 @@ class MainActivity : FlutterActivity() {
             this@MainActivity,
             date.time.toInt(),
             intent,
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager?.setRepeating(
             AlarmManager.RTC_WAKEUP,
@@ -231,6 +218,21 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+    private fun cancelRingAlarms(dataList: List<*>) {
+        Log.d("TAG", "Cancel Alarm By ID")
+        for (item in dataList) {
+            val date = convertDateToStr(item.toString())
+            val intent = Intent(this@MainActivity, AlarmReceiver::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(
+                this@MainActivity,
+                date.time.toInt(),
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            alarmManager?.cancel(pendingIntent)
+        }
+    }
+
     private fun initInstance() {
         calendar = Calendar.getInstance()
         alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
@@ -250,6 +252,8 @@ class MainActivity : FlutterActivity() {
                     setShowWhenLocked(true)
                 }
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+                enableLights(true)
+                enableVibration(true)
             }
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
