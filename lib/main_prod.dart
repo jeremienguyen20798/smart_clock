@@ -7,10 +7,8 @@ import 'package:smart_clock/firebase_options.dart';
 import 'package:smart_clock/smart_clock_bloc_observer.dart';
 
 import 'app.dart';
+import 'data/local_db/local_db.dart';
 import 'domain/repository/remote_config_repository.dart';
-
-const channel = MethodChannel('android_handle_alarm');
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
@@ -20,5 +18,6 @@ void main() async {
   await DependencyInjection.setUp();
   final remoteConfig = getIt.get<RemoteConfigRepository>();
   remoteConfig.fetchRemoteConstants();
+  await SmartClockLocalDB.initialize();
   runApp(const MyApp());
 }
