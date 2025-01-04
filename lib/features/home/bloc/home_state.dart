@@ -100,3 +100,11 @@ class UpdateAlarmByToggleSwitchState extends HomeState {
   List<Object?> get props => [alarm];
 }
 
+class ShowAlertDialogState extends HomeState {
+  final bool isShowDialog;
+
+  ShowAlertDialogState(this.isShowDialog);
+
+  @override
+  List<Object?> get props => [isShowDialog];
+}

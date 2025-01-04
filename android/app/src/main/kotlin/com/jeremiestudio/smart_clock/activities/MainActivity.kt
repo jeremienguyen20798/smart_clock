@@ -31,7 +31,7 @@ class MainActivity : FlutterActivity() {
         initInstance()
     }
 
-    @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat", "ObsoleteSdkInt")
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_clock/data/models/alarm.dart';
 import 'package:smart_clock/shared/dialog/update_alarm_dialog.dart';
+import 'package:smart_clock/shared/widgets/warning_dialog.dart';
 
 import '../../shared/dialog/edit_message_dialog.dart';
 
@@ -23,5 +24,18 @@ class DialogUtils {
     showDialog(
         context: context,
         builder: (BuildContext context) => const EditMessageDialog());
+  }
+
+  static void showAlertDialog(BuildContext context, String title,
+      String content, Function() onSettings) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return WarningDialog(title: title, content: content);
+        }).then((value) {
+      if (value != null) {
+        onSettings();
+      }
+    });
   }
 }
