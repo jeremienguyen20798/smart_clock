@@ -115,6 +115,7 @@ class MainActivity : FlutterActivity() {
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
                 enableLights(true)
                 enableVibration(true)
+                setVibrationPattern(longArrayOf(0, 500, 250, 500))
             }
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
