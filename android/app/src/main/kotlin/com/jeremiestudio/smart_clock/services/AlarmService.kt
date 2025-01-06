@@ -63,6 +63,7 @@ class AlarmService : Service() {
         val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
             setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
             putExtra("note", message)
+            putExtra("alarmId", alarmId)
         }
         val fullScreenPendingIntent =
             PendingIntent.getActivity(

@@ -38,5 +38,6 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Customize your theme here -->
+        <item name="android:windowBackground">@null</item>
     </style>
 </resources>

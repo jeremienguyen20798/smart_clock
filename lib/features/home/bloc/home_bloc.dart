@@ -170,11 +170,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       await methodChannel.invokeMethod("cancelAlarm", event.alarm.toJson());
     } else {
       if (event.alarm.alarmDateTime.day != DateTime.now().day) {
-        event.alarm.alarmDateTime.add(const Duration(days: 1));
+        int distance = DateTime.now().difference(event.alarm.alarmDateTime).inDays;
+        event.alarm.alarmDateTime = event.alarm.alarmDateTime.add(Duration(days: distance));
       }
       if (event.alarm.alarmDateTime.isBefore(DateTime.now())) {
-        int tomorrow = DateTime.now().day + 1;
-        int distance = tomorrow - event.alarm.alarmDateTime.day;
+        DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
+        int distance = tomorrow.difference(event.alarm.alarmDateTime).inDays;
         // log("Distance: $distance");
         DateTime dateTime = event.alarm.alarmDateTime;
         event.alarm.alarmDateTime = dateTime.add(Duration(days: distance));

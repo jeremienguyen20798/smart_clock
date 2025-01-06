@@ -4,6 +4,8 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/AppTheme"
+    android:background="@null"
     tools:context=".AlarmActivity">
 
     <LinearLayout
@@ -40,6 +42,7 @@
         android:textSize="24sp" />
 
     <Button
+        style="@style/Widget.Theme.Android.ButtonBar.Fullscreen"
         android:id="@+id/stopAlarm"
         android:layout_margin="16dp"
         android:layout_alignParentBottom="true"
