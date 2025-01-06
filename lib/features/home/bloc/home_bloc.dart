@@ -8,6 +8,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_clock/core/constants/app_constants.dart';
+import 'package:smart_clock/core/utils/battery_saver_utils.dart';
 import 'package:smart_clock/core/utils/string_utils.dart';
 import 'package:smart_clock/data/local_db/local_db.dart';
 import 'package:smart_clock/data/models/alarm.dart';
@@ -37,6 +38,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<OnUpdateAlarmEvent>(_onUpdateAlarm);
     on<OnControlAlarmByToggleSwitchEvent>(_onControlAlarmByToggleSwitch);
     on<OnReloadAlarmListEvent>(_onReloadAlarmList);
+    on<OnShowAlertDialogEvent>(_onShowAlertDialog);
   }
 
   Future<void> _onRequestPermission(
@@ -103,31 +105,37 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onCreateAlarmBySpeech(
       OnCreateAlarmBySpeechEvent event, Emitter<HomeState> emitter) async {
-    if (kDebugMode) {
-      final result = await methodChannel.invokeMethod(
-          'setAlarm', AppConstants.demoAlarm.toJson());
-      if (result != null) {
-        SmartClockLocalDB.createAlarm(AppConstants.demoAlarm);
-        add(GetAlarmListEvent());
-      }
+    final isPowerSaveMode = await BatterySaverUtils.isBatterySaverEnabled();
+    //Trả về false nếu ứng dụng đang bị tối ưu hóa pin.
+    if (!isPowerSaveMode) {
+      add(OnShowAlertDialogEvent(!isPowerSaveMode));
     } else {
-      emitter(GetTextFromSpeechState(event.prompt));
-      EasyLoading.show();
-      final headPrompt = pref.getString('HeadPrompt');
-      final lastPrompt = pref.getString('LastPrompt');
-      final alarm = await CreateAlarmBySpeechUsecase()
-          .call("$headPrompt${event.prompt}$lastPrompt${DateTime.now()}");
-      EasyLoading.dismiss();
-      if (alarm != null) {
-        alarm.alarmId = StringUtils.generateAlarmIdStr();
-        final result =
-            await methodChannel.invokeMethod('setAlarm', alarm.toJson());
+      if (kDebugMode) {
+        final result = await methodChannel.invokeMethod(
+            'setAlarm', AppConstants.demoAlarm.toJson());
         if (result != null) {
-          SmartClockLocalDB.createAlarm(alarm);
+          SmartClockLocalDB.createAlarm(AppConstants.demoAlarm);
           add(GetAlarmListEvent());
         }
       } else {
-        add(OnHandleErrorEvent());
+        emitter(GetTextFromSpeechState(event.prompt));
+        EasyLoading.show();
+        final headPrompt = pref.getString('HeadPrompt');
+        final lastPrompt = pref.getString('LastPrompt');
+        final alarm = await CreateAlarmBySpeechUsecase()
+            .call("$headPrompt${event.prompt}$lastPrompt${DateTime.now()}");
+        EasyLoading.dismiss();
+        if (alarm != null) {
+          alarm.alarmId = StringUtils.generateAlarmIdStr();
+          final result =
+              await methodChannel.invokeMethod('setAlarm', alarm.toJson());
+          if (result != null) {
+            SmartClockLocalDB.createAlarm(alarm);
+            add(GetAlarmListEvent());
+          }
+        } else {
+          add(OnHandleErrorEvent());
+        }
       }
     }
   }
@@ -162,11 +170,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       await methodChannel.invokeMethod("cancelAlarm", event.alarm.toJson());
     } else {
       if (event.alarm.alarmDateTime.day != DateTime.now().day) {
-        event.alarm.alarmDateTime.add(const Duration(days: 1));
+        int distance = DateTime.now().difference(event.alarm.alarmDateTime).inDays;
+        event.alarm.alarmDateTime = event.alarm.alarmDateTime.add(Duration(days: distance));
       }
       if (event.alarm.alarmDateTime.isBefore(DateTime.now())) {
-        int tomorrow = DateTime.now().day + 1;
-        int distance = tomorrow - event.alarm.alarmDateTime.day;
+        DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
+        int distance = tomorrow.difference(event.alarm.alarmDateTime).inDays;
         // log("Distance: $distance");
         DateTime dateTime = event.alarm.alarmDateTime;
         event.alarm.alarmDateTime = dateTime.add(Duration(days: distance));
@@ -183,5 +192,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       OnReloadAlarmListEvent event, Emitter<HomeState> emitter) async {
     final dataList = await SmartClockLocalDB.getAlarmList();
     emitter(ReloadAlarmListState(dataList));
+  }
+
+  void _onShowAlertDialog(
+      OnShowAlertDialogEvent event, Emitter<HomeState> emitter) {
+    emitter(ShowAlertDialogState(event.isShowDialog));
   }
 }

@@ -6,4 +6,9 @@
     <string name="alarm_title">Android Alarm</string>
     <string name="delete_alarm">Tắt báo thức</string>
     <string name="create_new_alarm">Đặt mới</string>
+    <string name="hello_world">Hello World</string>
+    <string name="stop_alarm">Tắt báo thức</string>
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

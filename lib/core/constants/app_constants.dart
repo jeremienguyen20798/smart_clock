@@ -31,6 +31,9 @@ class AppConstants {
   static const String titlePrompt = 'Prompt';
   static const String errorText = 'Đã xảy ra lỗi';
   static const String messagePrompt = 'Tạo báo thức với yêu cầu của bạn';
+  static const String warning = "Cảnh báo";
+  static const String warningContent =
+      'Chế độ tiết kiệm pin đang bật với ứng dụng này. Vui lòng tắt chế độ, nếu muốn nhận thông báo chính xác.';
   static Alarm demoAlarm = Alarm(
       alarmId: StringUtils.generateAlarmIdStr(),
       alarmDateTime: DateTime.now().add(const Duration(minutes: 5)),
