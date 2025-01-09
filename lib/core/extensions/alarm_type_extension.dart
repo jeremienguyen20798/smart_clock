@@ -1,15 +1,15 @@
-import 'package:smart_clock/core/constants/app_constants.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_clock/data/models/alarm.dart';
 
 extension AlarmTypeExtension on AlarmType {
   String content() {
     switch (this) {
       case AlarmType.daily:
-        return AppConstants.daily;
+        return 'daily'.tr();
       case AlarmType.justonce:
-        return AppConstants.justOnce;
+        return 'justOnce'.tr();
       case AlarmType.mondaytofriday:
-        return AppConstants.mondayToFriday;
+        return 'mondayToFriday'.tr();
     }
   }
 }

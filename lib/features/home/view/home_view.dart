@@ -65,7 +65,7 @@ class HomeView extends StatelessWidget {
                 : null,
             title: Text(
                 isDelete
-                    ? "Đã chọn xoá ${deleteAlarms?.length} mục"
+                    ? "${'deleteSelected'.tr()} ${deleteAlarms?.length} ${'items'.tr()}"
                     : 'homeTitle'.tr(),
                 style: const TextStyle(
                   fontSize: 18.0,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_clock/shared/widgets/alarm_countdown/cubit/alarm_countdown_cubit.dart';
@@ -45,11 +46,12 @@ class _AlarmCountdownViewState extends State<AlarmCountdownView> {
         builder: (context, state) {
       if (state.duration != null) {
         if (state.duration == Duration.zero) {
-          countdownText = 'Đang tính toán...';
+          countdownText = 'calculating'.tr();
         } else {
           final hours = state.duration!.inHours;
           final minutes = state.duration!.inMinutes % 60;
-          countdownText = 'Báo thức sau $hours giờ $minutes phút';
+          countdownText =
+              '${'alarmAfter'.tr()} $hours ${'hour'.tr()} $minutes ${'minute'.tr()}';
         }
         return Row(
           crossAxisAlignment: CrossAxisAlignment.center,

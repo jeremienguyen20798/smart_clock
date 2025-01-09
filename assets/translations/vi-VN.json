@@ -23,5 +23,14 @@
     "warning": "Cảnh báo",
     "warningContent": "Chế độ tiết kiệm pin đang bật với ứng dụng này. Vui lòng tắt chế độ, nếu muốn nhận thông báo chính xác.",
     "changeLanguage": "Thay đổi ngôn ngữ",
-    "appVersion": "Phiên bản ứng dụng"
+    "appVersion": "Phiên bản ứng dụng",
+    "confirmChange": "Xác nhận",
+    "inputContent": "Nhập nội dung",
+    "editNotification": "Chỉnh sửa thông báo",
+    "items": "mục",
+    "deleteSelected": "Đã chọn xoá",
+    "calculating": "Đang tính toán...",
+    "hour": "giờ",
+    "minute": "phút",
+    "alarmAfter": "Báo thức sau"
 }

@@ -2,11 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_clock/core/extensions/locale_extension.dart';
 import 'package:smart_clock/core/utils/bottomsheet_utils.dart';
 import 'package:smart_clock/features/settings/bloc/settings_bloc.dart';
 import 'package:smart_clock/features/settings/bloc/settings_state.dart';
 
-import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/dialog_utils.dart';
 
 class SettingsView extends StatelessWidget {
@@ -15,6 +15,10 @@ class SettingsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
+      String localeName = 'Vietnamese';
+      if (state is GetDefaultConfigsState) {
+        localeName = context.locale.toLanguageName();
+      }
       return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -25,9 +29,9 @@ class SettingsView extends StatelessWidget {
                 Navigator.pop(context);
               },
               icon: const Icon(Icons.arrow_back)),
-          title: const Text(
-            AppConstants.titleSettings,
-            style: TextStyle(
+          title: Text(
+            'settingsTitle'.tr(),
+            style: const TextStyle(
               fontSize: 18.0,
               color: Colors.black,
               fontWeight: FontWeight.bold,
@@ -59,7 +63,7 @@ class SettingsView extends StatelessWidget {
                           ..onTap = () {
                             DialogUtils.showEditMessageNotiDialog(context);
                           },
-                        text: 'Sửa',
+                        text: 'edit'.tr(),
                         style: const TextStyle(
                             color: Colors.deepPurple, fontSize: 14.0))
                   ])),
@@ -97,7 +101,11 @@ class SettingsView extends StatelessWidget {
             ),
             ListTile(
               onTap: () {
-                BottomsheetUtils.showChangeLanguageBottomSheet(context);
+                BottomsheetUtils.showChangeLanguageBottomSheet(context,
+                    (locale) {
+                  localeName = locale.toLanguageTag();
+                  context.setLocale(locale);
+                });
               },
               title: Text(
                 'changeLanguage'.tr(),
@@ -111,11 +119,11 @@ class SettingsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Tiếng Việt',
-                    style: TextStyle(
+                  Text(
+                    localeName,
+                    style: const TextStyle(
                       fontSize: 14.0,
-                      color: Colors.grey,
+                      color: Colors.deepPurple,
                     ),
                   ),
                   const SizedBox(width: 8.0),
