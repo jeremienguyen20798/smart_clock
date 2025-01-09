@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:smart_clock/core/constants/app_constants.dart';
-//import 'package:smart_clock/features/home/view/home_page.dart';
-import 'package:smart_clock/features/settings/view/settings_page.dart';
+import 'package:smart_clock/features/home/view/home_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,6 +16,6 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         builder: EasyLoading.init(),
-        home: const SettingsPage());
+        home: const HomePage());
   }
 }
