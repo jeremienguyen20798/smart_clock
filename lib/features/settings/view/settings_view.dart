@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_clock/core/utils/bottomsheet_utils.dart';
 import 'package:smart_clock/features/settings/bloc/settings_bloc.dart';
 import 'package:smart_clock/features/settings/bloc/settings_state.dart';
 
@@ -35,9 +37,9 @@ class SettingsView extends StatelessWidget {
         body: Column(
           children: [
             ListTile(
-              title: const Text(
-                AppConstants.defaultContentNotify,
-                style: TextStyle(
+              title: Text(
+                'defaultContentNotify'.tr(),
+                style: const TextStyle(
                   fontSize: 16.0,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -45,7 +47,7 @@ class SettingsView extends StatelessWidget {
               ),
               subtitle: RichText(
                   text: TextSpan(
-                      text: AppConstants.alarm,
+                      text: 'alarm'.tr(),
                       style: const TextStyle(
                         fontSize: 14.0,
                         color: Colors.grey,
@@ -63,9 +65,9 @@ class SettingsView extends StatelessWidget {
                   ])),
             ),
             ListTile(
-              title: const Text(
-                'Nhạc chuông báo thức',
-                style: TextStyle(
+              title: Text(
+                'alarmSoundContent'.tr(),
+                style: const TextStyle(
                   fontSize: 16.0,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -94,9 +96,12 @@ class SettingsView extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: const Text(
-                'Thay đổi ngôn ngữ',
-                style: TextStyle(
+              onTap: () {
+                BottomsheetUtils.showChangeLanguageBottomSheet(context);
+              },
+              title: Text(
+                'changeLanguage'.tr(),
+                style: const TextStyle(
                   fontSize: 16.0,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -124,16 +129,16 @@ class SettingsView extends StatelessWidget {
                 ],
               ),
             ),
-            const ListTile(
+            ListTile(
               title: Text(
-                'Phiên bản ứng dụng',
-                style: TextStyle(
+                'appVersion'.tr(),
+                style: const TextStyle(
                   fontSize: 16.0,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              trailing: Text(
+              trailing: const Text(
                 'Version 1.0.0',
                 style: TextStyle(
                   fontSize: 14.0,

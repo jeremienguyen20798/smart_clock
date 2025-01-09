@@ -4,7 +4,7 @@
     "alarm": "Báo thức",
     "deleteAlarm": "Xoá",
     "addAlarmTitleText": "Thêm báo thức",
-    "alarmSoundContent": "Nhạc chuông",
+    "alarmSoundContent": "Nhạc chuông báo thức",
     "typeRepeatAlarm": "Lặp lại",
     "whenAlarm": "Xoá báo thức sau khi thông báo",
     "inputAlarmNote": "Ghi chú báo thức",
@@ -21,5 +21,7 @@
     "errorText": "Đã xảy ra lỗi",
     "messagePrompt": "Tạo báo thức với yêu cầu của bạn",
     "warning": "Cảnh báo",
-    "warningContent": "Chế độ tiết kiệm pin đang bật với ứng dụng này. Vui lòng tắt chế độ, nếu muốn nhận thông báo chính xác."
+    "warningContent": "Chế độ tiết kiệm pin đang bật với ứng dụng này. Vui lòng tắt chế độ, nếu muốn nhận thông báo chính xác.",
+    "changeLanguage": "Thay đổi ngôn ngữ",
+    "appVersion": "Phiên bản ứng dụng"
 }

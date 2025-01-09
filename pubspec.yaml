@@ -63,6 +63,7 @@ dependencies:
   android_power_manager: ^1.0.0
   # in_app_purchase: ^3.2.0
   easy_localization: ^3.0.7
+  flutter_svg: ^2.0.17
 
 dev_dependencies:
   flutter_test:
@@ -93,6 +94,8 @@ flutter:
   assets:
     - assets/translations/en-US.json
     - assets/translations/vi-VN.json
+    - assets/images/vietnam.svg
+    - assets/images/united_kingdom.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
