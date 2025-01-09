@@ -1,6 +1,4 @@
 //import 'dart:developer';
-
-import 'package:android_power_manager/android_power_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -82,19 +80,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _getTextFromSpeech(
       OnGetTextFromSpeechEvent event, Emitter<HomeState> emitter) async {
-    if (kDebugMode) {
-      add(OnCreateAlarmBySpeechEvent(""));
+    final isPowerSaveMode = await BatterySaverUtils.isBatterySaverEnabled();
+    //Trả về false nếu ứng dụng đang bị tối ưu hóa pin.
+    if (!isPowerSaveMode) {
+      add(OnShowAlertDialogEvent(!isPowerSaveMode));
     } else {
-      var isIgnoringOptimize =
-          await AndroidPowerManager.isIgnoringBatteryOptimizations;
-      if (isIgnoringOptimize ?? true) {
+      if (kDebugMode) {
+        add(OnCreateAlarmBySpeechEvent(""));
+      } else {
         StartListeningUsecase().call((text) {
           add(OnRecognizeTextEvent(text));
         }, (input) {
           add(OnCreateAlarmBySpeechEvent(input));
         });
-      } else {
-        AndroidPowerManager.requestIgnoreBatteryOptimizations();
       }
     }
   }
@@ -105,37 +103,31 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onCreateAlarmBySpeech(
       OnCreateAlarmBySpeechEvent event, Emitter<HomeState> emitter) async {
-    final isPowerSaveMode = await BatterySaverUtils.isBatterySaverEnabled();
-    //Trả về false nếu ứng dụng đang bị tối ưu hóa pin.
-    if (!isPowerSaveMode) {
-      add(OnShowAlertDialogEvent(!isPowerSaveMode));
+    if (kDebugMode) {
+      final result = await methodChannel.invokeMethod(
+          'setAlarm', AppConstants.demoAlarm.toJson());
+      if (result != null) {
+        SmartClockLocalDB.createAlarm(AppConstants.demoAlarm);
+        add(GetAlarmListEvent());
+      }
     } else {
-      if (kDebugMode) {
-        final result = await methodChannel.invokeMethod(
-            'setAlarm', AppConstants.demoAlarm.toJson());
+      emitter(GetTextFromSpeechState(event.prompt));
+      EasyLoading.show();
+      final headPrompt = pref.getString('HeadPrompt');
+      final lastPrompt = pref.getString('LastPrompt');
+      final alarm = await CreateAlarmBySpeechUsecase()
+          .call("$headPrompt${event.prompt}$lastPrompt${DateTime.now()}");
+      EasyLoading.dismiss();
+      if (alarm != null) {
+        alarm.alarmId = StringUtils.generateAlarmIdStr();
+        final result =
+            await methodChannel.invokeMethod('setAlarm', alarm.toJson());
         if (result != null) {
-          SmartClockLocalDB.createAlarm(AppConstants.demoAlarm);
+          SmartClockLocalDB.createAlarm(alarm);
           add(GetAlarmListEvent());
         }
       } else {
-        emitter(GetTextFromSpeechState(event.prompt));
-        EasyLoading.show();
-        final headPrompt = pref.getString('HeadPrompt');
-        final lastPrompt = pref.getString('LastPrompt');
-        final alarm = await CreateAlarmBySpeechUsecase()
-            .call("$headPrompt${event.prompt}$lastPrompt${DateTime.now()}");
-        EasyLoading.dismiss();
-        if (alarm != null) {
-          alarm.alarmId = StringUtils.generateAlarmIdStr();
-          final result =
-              await methodChannel.invokeMethod('setAlarm', alarm.toJson());
-          if (result != null) {
-            SmartClockLocalDB.createAlarm(alarm);
-            add(GetAlarmListEvent());
-          }
-        } else {
-          add(OnHandleErrorEvent());
-        }
+        add(OnHandleErrorEvent());
       }
     }
   }
@@ -170,8 +162,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       await methodChannel.invokeMethod("cancelAlarm", event.alarm.toJson());
     } else {
       if (event.alarm.alarmDateTime.day != DateTime.now().day) {
-        int distance = DateTime.now().difference(event.alarm.alarmDateTime).inDays;
-        event.alarm.alarmDateTime = event.alarm.alarmDateTime.add(Duration(days: distance));
+        int distance =
+            DateTime.now().difference(event.alarm.alarmDateTime).inDays;
+        event.alarm.alarmDateTime =
+            event.alarm.alarmDateTime.add(Duration(days: distance));
       }
       if (event.alarm.alarmDateTime.isBefore(DateTime.now())) {
         DateTime tomorrow = DateTime.now().add(const Duration(days: 1));

@@ -1,17 +1,16 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
-import '../../core/constants/app_constants.dart';
 
 class EmptyView extends StatelessWidget {
   const EmptyView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 36.0),
-          child: Text(AppConstants.emptyText,
-              style: TextStyle(
+          padding: const EdgeInsets.symmetric(horizontal: 36.0),
+          child: Text('emptyText'.tr(),
+              style: const TextStyle(
                 fontSize: 16.0,
                 color: Colors.black,
               ))),

@@ -1,8 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:smart_clock/core/constants/app_constants.dart';
 import 'package:smart_clock/core/utils/battery_saver_utils.dart';
 import 'package:smart_clock/core/utils/dialog_utils.dart';
 import 'package:smart_clock/data/models/alarm.dart';
@@ -65,8 +65,8 @@ class HomeView extends StatelessWidget {
                 : null,
             title: Text(
                 isDelete
-                    ? "Đã chọn xoá ${deleteAlarms?.length} mục"
-                    : AppConstants.homeTitleText,
+                    ? "${'deleteSelected'.tr()} ${deleteAlarms?.length} ${'items'.tr()}"
+                    : 'homeTitle'.tr(),
                 style: const TextStyle(
                   fontSize: 18.0,
                   color: Colors.black,
@@ -106,8 +106,9 @@ class HomeView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(100.0)),
                   onPressed: () {
                     if (isShowDialog) {
-                      DialogUtils.showAlertDialog(context, AppConstants.warning,
-                          AppConstants.warningContent, () async {
+                      DialogUtils.showAlertDialog(
+                          context, 'warning'.tr(), 'warningContent'.tr(),
+                          () async {
                         isShowDialog =
                             await BatterySaverUtils.openBatterySaverSetting();
                       });
@@ -137,16 +138,16 @@ class HomeView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8.0)),
                     elevation: 0.0,
                     color: Colors.white,
-                    child: const Column(
+                    child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.delete_outline, color: Colors.black),
-                        SizedBox(height: 4.0),
+                        const Icon(Icons.delete_outline, color: Colors.black),
+                        const SizedBox(height: 4.0),
                         Text(
-                          AppConstants.deleteAlarm,
-                          style: TextStyle(color: Colors.black),
+                          'deleteAlarm'.tr(),
+                          style: const TextStyle(color: Colors.black),
                         )
                       ],
                     ),
