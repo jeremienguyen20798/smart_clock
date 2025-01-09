@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -97,9 +98,9 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
                 ),
                 const SizedBox(height: 32.0),
                 DropdownButtonFormField<AlarmType>(
-                    decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: AppConstants.typeRepeatAlarm),
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: 'typeRepeatAlarm'.tr()),
                     items: AlarmType.values
                         .map((item) => DropdownMenuItem<AlarmType>(
                             value: item, child: Text(item.content())))
@@ -126,9 +127,9 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
                     color: Colors.grey.shade200,
                     elevation: 0.0,
                     height: kMinInteractiveDimension,
-                    child: const Text(
-                      AppConstants.cancel,
-                      style: TextStyle(fontSize: 16.0),
+                    child: Text(
+                      'cancel'.tr(),
+                      style: const TextStyle(fontSize: 16.0),
                     ),
                   ),
                 ),
@@ -150,9 +151,9 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
                         borderRadius: BorderRadius.circular(8.0)),
                     color: Colors.purple,
                     textColor: Colors.white,
-                    child: const Text(
-                      AppConstants.edit,
-                      style: TextStyle(fontSize: 16.0),
+                    child: Text(
+                      'edit'.tr(),
+                      style: const TextStyle(fontSize: 16.0),
                     ),
                   ),
                 )

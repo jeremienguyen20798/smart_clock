@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class WarningDialog extends StatelessWidget {
@@ -16,7 +17,7 @@ class WarningDialog extends StatelessWidget {
           onPressed: () {
             Navigator.of(context).pop("settings");
           },
-          child: const Text('Cài đặt'),
+          child: Text('settingsTitle'.tr()),
         ),
       ],
     );
