@@ -69,6 +69,15 @@ class SettingsView extends StatelessWidget {
                   ])),
             ),
             ListTile(
+              title: const Text('Hiện thị thông báo ở màn hình khoá',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  )),
+              trailing: Switch(value: true, onChanged: (value) {}),
+            ),
+            ListTile(
               title: Text(
                 'alarmSoundContent'.tr(),
                 style: const TextStyle(
