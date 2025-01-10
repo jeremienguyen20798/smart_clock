@@ -45,9 +45,11 @@
         <activity
             android:name=".AlarmActivity"
             android:exported="true"
-            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:launchMode="singleInstance"
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
+            android:excludeFromRecents="true"
             android:theme="@style/AppTheme"
             android:turnScreenOn="true"
             tools:targetApi="o_mr1" />
