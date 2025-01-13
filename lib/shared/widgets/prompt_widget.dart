@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_constants.dart';
@@ -29,10 +30,10 @@ class _PromptWidgetState extends State<PromptWidget> {
         maxLines: 3,
         controller: promptController,
         readOnly: true,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           labelText: AppConstants.titlePrompt,
-          hintText: AppConstants.messagePrompt,
-          border: OutlineInputBorder(),
+          hintText: 'messagePrompt'.tr(),
+          border: const OutlineInputBorder(),
         ),
       ),
     );
