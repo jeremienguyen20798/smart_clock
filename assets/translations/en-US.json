@@ -32,5 +32,10 @@
     "calculating": "Calculating...",
     "hour": "hour",
     "minute": "minute",
-    "alarmAfter": "Alarm after"
+    "alarmAfter": "Alarm after",
+    "settingsApp": "Settings app",
+    "privacyPolicy": "Privacy policy",
+    "termsOfUse": "Terms of use",
+    "settingAlarm": "Alarm settings",
+    "displayAlarmInLockScreen": "Show notifications on lock screen"
 }

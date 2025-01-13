@@ -32,5 +32,10 @@
     "calculating": "Đang tính toán...",
     "hour": "giờ",
     "minute": "phút",
-    "alarmAfter": "Báo thức sau"
+    "alarmAfter": "Báo thức sau",
+    "settingsApp": "Cài đặt ứng dụng",
+    "privacyPolicy": "Chính sách bảo mật",
+    "termsOfUse": "Điều khoản sử dụng",
+    "settingAlarm": "Cài đặt báo thức",
+    "displayAlarmInLockScreen": "Hiện thị thông báo ở màn hình khoá"
 }
