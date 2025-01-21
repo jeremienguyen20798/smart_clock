@@ -37,5 +37,7 @@
     "privacyPolicy": "Privacy policy",
     "termsOfUse": "Terms of use",
     "settingAlarm": "Alarm settings",
-    "displayAlarmInLockScreen": "Show notifications on lock screen"
+    "displayAlarmInLockScreen": "Show full-screen notifications on the lock screen",
+    "upgradePro": "Upgrade Pro",
+    "translateWithAI": "Translate languages with AI"
 }

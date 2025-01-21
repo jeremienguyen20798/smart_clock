@@ -73,6 +73,12 @@ class HomeView extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 )),
             actions: [
+              kDebugMode
+                  ? IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.g_translate,
+                          color: Colors.deepPurple))
+                  : const SizedBox(),
               IconButton(
                   onPressed: () {
                     Navigator.push(
@@ -97,28 +103,49 @@ class HomeView extends StatelessWidget {
                   : AlarmList(alarmList: alarmList, deleteList: deleteAlarms),
           floatingActionButton: isDelete
               ? null
-              : MaterialButton(
-                  elevation: 2.5,
-                  minWidth: 56.0,
-                  height: 56.0,
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100.0)),
-                  onPressed: () {
-                    if (isShowDialog) {
-                      DialogUtils.showAlertDialog(
-                          context, 'warning'.tr(), 'warningContent'.tr(),
-                          () async {
-                        isShowDialog =
-                            await BatterySaverUtils.openBatterySaverSetting();
-                      });
-                    } else {
-                      context.read<HomeBloc>().add(OnGetTextFromSpeechEvent());
-                    }
-                  },
-                  child: kDebugMode
-                      ? const Icon(Icons.add)
-                      : const Icon(Icons.mic),
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    kDebugMode
+                        ? MaterialButton(
+                            elevation: 2.5,
+                            minWidth: 56.0,
+                            height: 56.0,
+                            color: Colors.deepPurple,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100.0)),
+                            onPressed: () {},
+                            child: const Icon(Icons.event, color: Colors.white),
+                          )
+                        : const SizedBox(),
+                    const SizedBox(height: 12.0),
+                    MaterialButton(
+                      elevation: 2.5,
+                      minWidth: 56.0,
+                      height: 56.0,
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100.0)),
+                      onPressed: () {
+                        if (isShowDialog) {
+                          DialogUtils.showAlertDialog(
+                              context, 'warning'.tr(), 'warningContent'.tr(),
+                              () async {
+                            isShowDialog = await BatterySaverUtils
+                                .openBatterySaverSetting();
+                          });
+                        } else {
+                          context
+                              .read<HomeBloc>()
+                              .add(OnGetTextFromSpeechEvent());
+                        }
+                      },
+                      child: kDebugMode
+                          ? const Icon(Icons.add)
+                          : const Icon(Icons.mic),
+                    ),
+                  ],
                 ),
           persistentFooterAlignment: AlignmentDirectional.center,
           persistentFooterButtons: isDelete

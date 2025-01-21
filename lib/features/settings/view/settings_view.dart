@@ -1,3 +1,4 @@
+//import 'package:android_intent_plus/android_intent.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -88,6 +89,11 @@ class SettingsView extends StatelessWidget {
                         ])),
                   ),
                   ListTile(
+                    onTap: () {
+                      context
+                          .read<SettingsBloc>()
+                          .add(OnFullScreenNotificationEvent());
+                    },
                     leading: const Icon(Icons.screen_lock_portrait_outlined,
                         color: Colors.deepPurple),
                     contentPadding: EdgeInsets.zero,
@@ -97,7 +103,13 @@ class SettingsView extends StatelessWidget {
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         )),
-                    trailing: Switch(value: true, onChanged: (value) {}),
+                    trailing: Switch(
+                        value: false,
+                        onChanged: (value) {
+                          context
+                              .read<SettingsBloc>()
+                              .add(OnFullScreenNotificationEvent());
+                        }),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,

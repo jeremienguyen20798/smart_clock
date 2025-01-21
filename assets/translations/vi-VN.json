@@ -37,5 +37,7 @@
     "privacyPolicy": "Chính sách bảo mật",
     "termsOfUse": "Điều khoản sử dụng",
     "settingAlarm": "Cài đặt báo thức",
-    "displayAlarmInLockScreen": "Hiện thị thông báo ở màn hình khoá"
+    "displayAlarmInLockScreen": "Hiện thị thông báo toàn màn hình ở màn hình khoá",
+    "upgradePro": "Nâng cấp Pro",
+    "translateWithAI": "Dịch ngôn ngữ với AI"
 }

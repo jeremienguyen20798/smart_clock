@@ -1,6 +1,7 @@
 package com.jeremiestudio.smart_clock.services
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
@@ -53,23 +54,29 @@ class AlarmService : Service() {
         mediaPlayer?.release()
     }
 
+    @SuppressLint("NewApi")
     private fun showNotification(id: Int, context: Context, message: String, alarmId: String?) {
+        var fullScreenPendingIntent: PendingIntent? = null
         val intent = Intent(context, DeleteAlarmReceiver::class.java).apply {
             action = "TURN_OFF_ALARM"
             putExtra("ALARM_ID", alarmId)
         }
         val deleteAlarmIntent: PendingIntent =
             PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_IMMUTABLE)
-        val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
-            setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            putExtra("note", message)
-            putExtra("alarmId", alarmId)
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        if (notificationManager.canUseFullScreenIntent()) {
+            val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
+                setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                putExtra("note", message)
+                putExtra("alarmId", alarmId)
+            }
+            fullScreenPendingIntent =
+                PendingIntent.getActivity(
+                    context, 0, fullScreenIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
         }
-        val fullScreenPendingIntent =
-            PendingIntent.getActivity(
-                context, 0, fullScreenIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
+
         val notification =
             NotificationCompat.Builder(
                 context,
