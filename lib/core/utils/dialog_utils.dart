@@ -20,10 +20,16 @@ class DialogUtils {
     });
   }
 
-  static void showEditMessageNotiDialog(BuildContext context) {
+  static void showEditMessageNotiDialog(
+      BuildContext context, Function(String) onEdit) {
     showDialog(
-        context: context,
-        builder: (BuildContext context) => const EditMessageDialog());
+            context: context,
+            builder: (BuildContext context) => const EditMessageDialog())
+        .then((value) {
+      if (value != null) {
+        onEdit(value);
+      }
+    });
   }
 
   static void showAlertDialog(BuildContext context, String title,

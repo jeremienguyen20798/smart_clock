@@ -19,7 +19,9 @@ class SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
       String localeName = 'Vietnamese';
+      String? messageDefault;
       if (state is GetDefaultConfigsState) {
+        messageDefault = state.messageDefault;
         localeName = context.locale.toLanguageName();
       }
       return Scaffold(
@@ -71,7 +73,7 @@ class SettingsView extends StatelessWidget {
                     ),
                     subtitle: RichText(
                         text: TextSpan(
-                            text: 'alarm'.tr(),
+                            text: messageDefault ?? 'alarm'.tr(),
                             style: const TextStyle(
                               fontSize: 14.0,
                               color: Colors.grey,
@@ -81,8 +83,11 @@ class SettingsView extends StatelessWidget {
                           TextSpan(
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  DialogUtils.showEditMessageNotiDialog(
-                                      context);
+                                  DialogUtils.showEditMessageNotiDialog(context,
+                                      (note) {
+                                    context.read<SettingsBloc>().add(
+                                        OnEditContentNotificationEvent(note));
+                                  });
                                 },
                               text: 'edit'.tr(),
                               style: const TextStyle(
