@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "952438402975",
-    "project_id": "smart-clock-b7852",
-    "storage_bucket": "smart-clock-b7852.firebasestorage.app"
+    "project_number": "631502426009",
+    "project_id": "ireminders-468f0",
+    "storage_bucket": "ireminders-468f0.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:952438402975:android:e6fc43aed2db961c2a97aa",
+        "mobilesdk_app_id": "1:631502426009:android:78ad803bdbde5051728d08",
         "android_client_info": {
           "package_name": "com.jeremiestudio.smart_clock"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAdUBca90mJ9N2oEFqxYv58rz7xIdEn4ac"
+          "current_key": "AIzaSyBkSpRznswWQB8NLXn22sXlFVgSwErsgDM"
         }
       ],
       "services": {

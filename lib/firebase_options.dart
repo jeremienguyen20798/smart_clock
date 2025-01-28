@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAdUBca90mJ9N2oEFqxYv58rz7xIdEn4ac',
-    appId: '1:952438402975:android:e6fc43aed2db961c2a97aa',
-    messagingSenderId: '952438402975',
-    projectId: 'smart-clock-b7852',
-    storageBucket: 'smart-clock-b7852.firebasestorage.app',
+    apiKey: 'AIzaSyBkSpRznswWQB8NLXn22sXlFVgSwErsgDM',
+    appId: '1:631502426009:android:78ad803bdbde5051728d08',
+    messagingSenderId: '631502426009',
+    projectId: 'ireminders-468f0',
+    storageBucket: 'ireminders-468f0.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA53ItBdTDHxn0s9phvrvD2KjVz_LBajfE',
-    appId: '1:952438402975:ios:625a26342226a70d2a97aa',
-    messagingSenderId: '952438402975',
-    projectId: 'smart-clock-b7852',
-    storageBucket: 'smart-clock-b7852.firebasestorage.app',
+    apiKey: 'AIzaSyDjTTacxN1aE_9tc-aXF9evV1DxP2BQzmM',
+    appId: '1:631502426009:ios:5a38a3fadc1b2f26728d08',
+    messagingSenderId: '631502426009',
+    projectId: 'ireminders-468f0',
+    storageBucket: 'ireminders-468f0.firebasestorage.app',
     iosBundleId: 'com.example.smartClock',
   );
+
 }
