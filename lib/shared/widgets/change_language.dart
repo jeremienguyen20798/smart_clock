@@ -1,5 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ChangeLanguage extends StatefulWidget {
@@ -95,28 +94,6 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
               });
             },
           ),
-          kDebugMode
-              ? ListTile(
-                  leading:
-                      const Icon(Icons.g_translate, color: Colors.deepPurple),
-                  title: Text('translateWithAI'.tr(),
-                      style: const TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      )),
-                  trailing: MaterialButton(
-                      onPressed: () {},
-                      color: Colors.deepOrange,
-                      elevation: 0.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100.0),
-                      ),
-                      child: Text('upgradePro'.tr(),
-                          style: const TextStyle(color: Colors.white))),
-                  onTap: () {},
-                )
-              : const SizedBox(),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Align(

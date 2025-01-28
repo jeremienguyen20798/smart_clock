@@ -27,7 +27,7 @@ class DialogUtils {
   }
 
   static void showAlertDialog(BuildContext context, String title,
-      String content, Function() onSettings) {
+      String content, Function() onSettings, Function() onCancel) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -35,6 +35,8 @@ class DialogUtils {
         }).then((value) {
       if (value != null) {
         onSettings();
+      } else {
+        onCancel();
       }
     });
   }

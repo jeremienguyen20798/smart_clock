@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:smart_clock/core/extensions/locale_extension.dart';
 import 'package:smart_clock/core/utils/bottomsheet_utils.dart';
 import 'package:smart_clock/features/settings/bloc/settings_bloc.dart';
@@ -110,6 +111,22 @@ class SettingsView extends StatelessWidget {
                               .read<SettingsBloc>()
                               .add(OnFullScreenNotificationEvent());
                         }),
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    onTap: () {
+                      EasyLoading.showToast('Tính năng đang phát triển');
+                    },
+                    leading:
+                        Icon(Icons.auto_awesome, color: Colors.yellow.shade800),
+                    title: Text(
+                      'Tạo báo thức với AI khi offline'.tr(),
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -248,7 +265,7 @@ class SettingsView extends StatelessWidget {
                       ),
                     ),
                     trailing: const Text(
-                      'Version 1.0.0',
+                      'Version 1.0.2',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Colors.deepPurple,

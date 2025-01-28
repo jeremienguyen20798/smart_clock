@@ -60,3 +60,5 @@ class OnShowAlertDialogEvent extends HomeEvent {
 
   OnShowAlertDialogEvent(this.isShowDialog);
 }
+
+class OnCancelAlertDialogEvent extends HomeEvent {}

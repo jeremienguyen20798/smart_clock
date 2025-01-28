@@ -63,19 +63,19 @@ class AlarmService : Service() {
         }
         val deleteAlarmIntent: PendingIntent =
             PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_IMMUTABLE)
-        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        if (notificationManager.canUseFullScreenIntent()) {
-            val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
-                setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                putExtra("note", message)
-                putExtra("alarmId", alarmId)
-            }
-            fullScreenPendingIntent =
-                PendingIntent.getActivity(
-                    context, 0, fullScreenIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-        }
+//        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+//        if (notificationManager.canUseFullScreenIntent()) {
+//            val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
+//                setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+//                putExtra("note", message)
+//                putExtra("alarmId", alarmId)
+//            }
+//            fullScreenPendingIntent =
+//                PendingIntent.getActivity(
+//                    context, 0, fullScreenIntent,
+//                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+//                )
+//        }
 
         val notification =
             NotificationCompat.Builder(
@@ -86,7 +86,7 @@ class AlarmService : Service() {
                 .setContentTitle(ContextCompat.getString(context, R.string.alarm_title))
                 .setContentText(message)
                 .setOngoing(true)
-                .setFullScreenIntent(fullScreenPendingIntent, true)
+                //.setFullScreenIntent(fullScreenPendingIntent, true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
