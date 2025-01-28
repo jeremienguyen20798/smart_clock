@@ -32,5 +32,12 @@
     "calculating": "Calculating...",
     "hour": "hour",
     "minute": "minute",
-    "alarmAfter": "Alarm after"
+    "alarmAfter": "Alarm after",
+    "settingsApp": "Settings app",
+    "privacyPolicy": "Privacy policy",
+    "termsOfUse": "Terms of use",
+    "settingAlarm": "Alarm settings",
+    "displayAlarmInLockScreen": "Show full-screen notifications on the lock screen",
+    "upgradePro": "Upgrade Pro",
+    "translateWithAI": "Translate languages with AI"
 }

@@ -13,7 +13,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
 
   @override
   void didChangeDependencies() {
-     _selectedLocale = context.locale;
+    _selectedLocale = context.locale;
     super.didChangeDependencies();
   }
 

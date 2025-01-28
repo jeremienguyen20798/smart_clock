@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getString
@@ -73,6 +76,10 @@ class MainActivity : FlutterActivity() {
                     val data = call.arguments as List<*>
                     alarmUtils?.cancelRingAlarms(data)
                 }
+
+                "openAppSettings" -> {
+                    openApplicationDetailSettings()
+                }
             }
         }
     }
@@ -120,6 +127,18 @@ class MainActivity : FlutterActivity() {
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
+    }
+
+    @SuppressLint("InlinedApi")
+    private fun openApplicationDetailSettings() {
+        val intent = Intent("miui.intent.action.APP_PERM_EDITOR").apply {
+            setClassName(
+                "com.miui.securitycenter",
+                "com.miui.permcenter.permissions.PermissionsEditorActivity"
+            )
+            putExtra("extra_pkgname", packageName)
+        }
+        startActivity(intent)
     }
 
     enum class AlarmType { justonce, daily, mondaytofriday }

@@ -14,7 +14,7 @@ import 'package:smart_clock/shared/widgets/prompt_widget.dart';
 import 'package:smart_clock/features/settings/view/settings_page.dart';
 
 List<Alarm> alarmList = [];
-bool isDelete = false, isShowDialog = false;
+bool isDelete = false;
 List<Alarm>? deleteAlarms;
 String? recognizeText, prompt;
 
@@ -23,7 +23,7 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeBloc, HomeState>(
+    return BlocConsumer<HomeBloc, HomeState>(
       builder: (context, state) {
         if (state is GetAlarmListState) {
           prompt = null;
@@ -49,8 +49,6 @@ class HomeView extends StatelessWidget {
           prompt = state.result;
         } else if (state is ReloadAlarmListState) {
           alarmList = state.alarmList;
-        } else if (state is ShowAlertDialogState) {
-          isShowDialog = state.isShowDialog;
         }
         return Scaffold(
           backgroundColor: Colors.white,
@@ -105,16 +103,7 @@ class HomeView extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100.0)),
                   onPressed: () {
-                    if (isShowDialog) {
-                      DialogUtils.showAlertDialog(
-                          context, 'warning'.tr(), 'warningContent'.tr(),
-                          () async {
-                        isShowDialog =
-                            await BatterySaverUtils.openBatterySaverSetting();
-                      });
-                    } else {
-                      context.read<HomeBloc>().add(OnGetTextFromSpeechEvent());
-                    }
+                    context.read<HomeBloc>().add(OnGetTextFromSpeechEvent());
                   },
                   child: kDebugMode
                       ? const Icon(Icons.add)
@@ -145,16 +134,24 @@ class HomeView extends StatelessWidget {
                       children: [
                         const Icon(Icons.delete_outline, color: Colors.black),
                         const SizedBox(height: 4.0),
-                        Text(
-                          'deleteAlarm'.tr(),
-                          style: const TextStyle(color: Colors.black),
-                        )
+                        Text('deleteAlarm'.tr(),
+                            style: const TextStyle(color: Colors.black))
                       ],
                     ),
                   ),
                 ]
               : null,
         );
+      },
+      listener: (BuildContext context, HomeState state) {
+        if (state is ShowAlertDialogState) {
+          DialogUtils.showAlertDialog(
+              context, 'warning'.tr(), 'warningContent'.tr(), () async {
+            await BatterySaverUtils.openBatterySaverSetting();
+          }, () {
+            context.read<HomeBloc>().add(OnCancelAlertDialogEvent());
+          });
+        }
       },
     );
   }

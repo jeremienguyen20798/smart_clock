@@ -108,3 +108,5 @@ class ShowAlertDialogState extends HomeState {
   @override
   List<Object?> get props => [isShowDialog];
 }
+
+class CancelAlertDialogState extends HomeState {}

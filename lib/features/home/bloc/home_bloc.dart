@@ -37,6 +37,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<OnControlAlarmByToggleSwitchEvent>(_onControlAlarmByToggleSwitch);
     on<OnReloadAlarmListEvent>(_onReloadAlarmList);
     on<OnShowAlertDialogEvent>(_onShowAlertDialog);
+    on<OnCancelAlertDialogEvent>(_onCancelAlertDialog);
   }
 
   Future<void> _onRequestPermission(
@@ -191,5 +192,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   void _onShowAlertDialog(
       OnShowAlertDialogEvent event, Emitter<HomeState> emitter) {
     emitter(ShowAlertDialogState(event.isShowDialog));
+  }
+
+  void _onCancelAlertDialog(
+      OnCancelAlertDialogEvent event, Emitter<HomeState> emitter) {
+    emitter(CancelAlertDialogState());
   }
 }
