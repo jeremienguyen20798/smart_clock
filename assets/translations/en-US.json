@@ -13,7 +13,6 @@
     "confirm": "Set",
     "edit": "Edit",
     "settingsTitle": "Settings",
-    "defaultContentNotify": "Default notification content",
     "daily": "Daily",
     "justOnce": "Once",
     "mondayToFriday": "Monday to Friday",
@@ -38,6 +37,6 @@
     "termsOfUse": "Terms of use",
     "settingAlarm": "Alarm settings",
     "displayAlarmInLockScreen": "Show full-screen notifications on the lock screen",
-    "upgradePro": "Upgrade Pro",
-    "translateWithAI": "Translate languages with AI"
+    "viewMore": "View more",
+    "default": "Default: "
 }

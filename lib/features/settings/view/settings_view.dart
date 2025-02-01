@@ -1,6 +1,5 @@
 //import 'package:android_intent_plus/android_intent.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -10,8 +9,6 @@ import 'package:smart_clock/features/settings/bloc/settings_bloc.dart';
 import 'package:smart_clock/features/settings/bloc/settings_event.dart';
 import 'package:smart_clock/features/settings/bloc/settings_state.dart';
 
-import '../../../core/utils/dialog_utils.dart';
-
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
 
@@ -19,9 +16,7 @@ class SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
       String localeName = 'Vietnamese';
-      String? messageDefault;
       if (state is GetDefaultConfigsState) {
-        messageDefault = state.messageDefault;
         localeName = context.locale.toLanguageName();
       }
       return Scaffold(
@@ -60,11 +55,11 @@ class SettingsView extends StatelessWidget {
                 children: [
                   const SizedBox(height: 16.0),
                   ListTile(
-                    leading: const Icon(Icons.edit_outlined,
-                        color: Colors.deepPurple),
                     contentPadding: EdgeInsets.zero,
+                    leading:
+                        const Icon(Icons.music_note, color: Colors.deepPurple),
                     title: Text(
-                      'defaultContentNotify'.tr(),
+                      'alarmSoundContent'.tr(),
                       style: const TextStyle(
                         fontSize: 16.0,
                         color: Colors.black,
@@ -72,27 +67,36 @@ class SettingsView extends StatelessWidget {
                       ),
                     ),
                     subtitle: RichText(
-                        text: TextSpan(
-                            text: messageDefault ?? 'alarm'.tr(),
-                            style: const TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.grey,
-                            ),
-                            children: [
-                          const TextSpan(text: '  '),
+                      maxLines: 1,
+                      text: TextSpan(
+                        text: 'default'.tr(),
+                        style: const TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.black,
+                        ),
+                        children: const [
                           TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  DialogUtils.showEditMessageNotiDialog(context,
-                                      (note) {
-                                    context.read<SettingsBloc>().add(
-                                        OnEditContentNotificationEvent(note));
-                                  });
-                                },
-                              text: 'edit'.tr(),
-                              style: const TextStyle(
-                                  color: Colors.deepPurple, fontSize: 14.0))
-                        ])),
+                              text: 'iPhone ringtone',
+                              style: TextStyle(
+                                  fontSize: 14.0,
+                                  color: Colors.black,
+                                  overflow: TextOverflow.ellipsis)),
+                        ],
+                      ),
+                    ),
+                    trailing: MaterialButton(
+                      onPressed: () {
+                        BottomsheetUtils.showRingtoneBottomSheet(context);
+                      },
+                      color: Colors.blue,
+                      elevation: 0.0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100.0)),
+                      child: Text(
+                        'viewMore'.tr(),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
                   ListTile(
                     onTap: () {
@@ -131,38 +135,6 @@ class SettingsView extends StatelessWidget {
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                       ),
-                    ),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      'alarmSoundContent'.tr(),
-                      style: const TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    trailing: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'Ringtone',
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(width: 8.0),
-                        InkWell(
-                            onTap: () {},
-                            child: const Icon(
-                              Icons.arrow_forward_ios,
-                              color: Colors.grey,
-                              size: 18.0,
-                            ))
-                      ],
                     ),
                   ),
                 ],
