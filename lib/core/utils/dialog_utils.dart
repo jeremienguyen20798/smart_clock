@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_clock/data/models/alarm.dart';
+import 'package:smart_clock/shared/dialog/ringtone_player_dialog.dart';
 import 'package:smart_clock/shared/dialog/update_alarm_dialog.dart';
 import 'package:smart_clock/shared/widgets/warning_dialog.dart';
 
@@ -31,5 +32,15 @@ class DialogUtils {
         onCancel();
       }
     });
+  }
+
+  static void showPlayerDialog(
+      BuildContext context, String nameRingtone, String url) {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return RingtonePlayerDialog(name: nameRingtone, ringtoneUrl: url);
+        });
   }
 }
