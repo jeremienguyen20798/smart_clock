@@ -38,5 +38,8 @@
     "settingAlarm": "Alarm settings",
     "displayAlarmInLockScreen": "Show full-screen notifications on the lock screen",
     "viewMore": "View more",
-    "default": "Default: "
+    "default": "Default: ",
+    "ringtone": "Ringtone",
+    "createAlarmWithAIOffline": "Create alarms with AI when offline",
+    "featureIsDevelopment": "Feature under development"
 }

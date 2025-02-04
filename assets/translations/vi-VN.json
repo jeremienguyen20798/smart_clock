@@ -38,5 +38,8 @@
     "settingAlarm": "Cài đặt báo thức",
     "displayAlarmInLockScreen": "Hiện thị thông báo toàn màn hình ở màn hình khoá",
     "viewMore": "Xem thêm",
-    "default": "Mặc định: "
+    "default": "Mặc định: ",
+    "ringtone": "Nhạc chuông",
+    "createAlarmWithAIOffline": "Tạo báo thức với AI khi offline",
+    "featureIsDevelopment": "Tính năng đang phát triển"
 }

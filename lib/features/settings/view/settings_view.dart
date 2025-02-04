@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:smart_clock/core/extensions/locale_extension.dart';
 import 'package:smart_clock/core/utils/bottomsheet_utils.dart';
+import 'package:smart_clock/features/ringtone/view/ringtone_page.dart';
 import 'package:smart_clock/features/settings/bloc/settings_bloc.dart';
 import 'package:smart_clock/features/settings/bloc/settings_event.dart';
 import 'package:smart_clock/features/settings/bloc/settings_state.dart';
@@ -86,7 +87,10 @@ class SettingsView extends StatelessWidget {
                     ),
                     trailing: MaterialButton(
                       onPressed: () {
-                        BottomsheetUtils.showRingtoneBottomSheet(context);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const RingtonePage()));
                       },
                       color: Colors.blue,
                       elevation: 0.0,
@@ -124,12 +128,12 @@ class SettingsView extends StatelessWidget {
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     onTap: () {
-                      EasyLoading.showToast('Tính năng đang phát triển');
+                      EasyLoading.showToast('featureIsDevelopment'.tr());
                     },
                     leading:
                         Icon(Icons.auto_awesome, color: Colors.yellow.shade800),
                     title: Text(
-                      'Tạo báo thức với AI khi offline'.tr(),
+                      'createAlarmWithAIOffline'.tr(),
                       style: const TextStyle(
                         fontSize: 16.0,
                         color: Colors.black,
@@ -242,7 +246,7 @@ class SettingsView extends StatelessWidget {
                       ),
                     ),
                     trailing: const Text(
-                      'Version 1.0.2',
+                      '1.0.3',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Colors.deepPurple,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html;
 import 'package:just_audio/just_audio.dart';
@@ -78,8 +79,15 @@ class _RingtonePlayerDialogState extends State<RingtonePlayerDialog> {
                       : const SizedBox(),
                   duration != null
                       ? IconButton(
-                          onPressed: () {
-                            ringtonePlayer.pause();
+                          onPressed: () async {
+                            final ringtoneUrl =
+                                await crawlRingtoneData(widget.ringtoneUrl);
+                            if (ringtoneUrl != null) {
+                              FileDownloader.downloadFile(
+                                  url: ringtoneUrl,
+                                  downloadDestination:
+                                      DownloadDestinations.appFiles);
+                            }
                           },
                           icon: const Icon(Icons.pause, color: Colors.white))
                       : const SizedBox()
