@@ -84,9 +84,8 @@ class _RingtonePlayerDialogState extends State<RingtonePlayerDialog> {
                                 await crawlRingtoneData(widget.ringtoneUrl);
                             if (ringtoneUrl != null) {
                               FileDownloader.downloadFile(
-                                  url: ringtoneUrl,
-                                  downloadDestination:
-                                      DownloadDestinations.appFiles);
+                                downloadDestination: DownloadDestinations.appFiles,
+                                  url: ringtoneUrl, name: "ringtone");
                             }
                           },
                           icon: const Icon(Icons.pause, color: Colors.white))

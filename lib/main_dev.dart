@@ -9,6 +9,7 @@ import 'package:smart_clock/di.dart';
 import 'app.dart';
 import 'smart_clock_bloc_observer.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();

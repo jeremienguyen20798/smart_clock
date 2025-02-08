@@ -8,7 +8,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
+import android.net.Uri
+import android.os.Environment
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -16,6 +19,7 @@ import androidx.core.content.ContextCompat
 import com.jeremiestudio.smart_clock.AlarmActivity
 import com.jeremiestudio.smart_clock.R
 import com.jeremiestudio.smart_clock.receivers.DeleteAlarmReceiver
+import java.io.File
 
 class AlarmService : Service() {
 
@@ -23,7 +27,13 @@ class AlarmService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        mediaPlayer = MediaPlayer.create(this, R.raw.sound)
+        val ringtoneFile = getInternalFile()
+        Log.d("TAG", "File location: ${ringtoneFile.path}")
+        mediaPlayer = if (ringtoneFile.exists()) {
+            MediaPlayer.create(this, Uri.fromFile(ringtoneFile))
+        } else {
+            MediaPlayer.create(this, R.raw.sound)
+        }
         mediaPlayer?.isLooping = true
         mediaPlayer?.setVolume(0.0F, 1.0F)
     }
@@ -118,4 +128,10 @@ class AlarmService : Service() {
         }
     }
 
+    private fun getInternalFile(): File {
+        return File(
+            "/storage/emulated/0/Android/data/com.jeremiestudio.smart_clock.dev/files/data/user/0/com.jeremiestudio.smart_clock.dev/files/",
+            "ringtone.mp3"
+        )
+    }
 }
