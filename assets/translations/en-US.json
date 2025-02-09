@@ -41,5 +41,6 @@
     "default": "Default: ",
     "ringtone": "Ringtone",
     "createAlarmWithAIOffline": "Create alarms with AI when offline",
-    "featureIsDevelopment": "Feature under development"
+    "featureIsDevelopment": "Feature under development",
+    "editAlarm": "Edit alarm"
 }

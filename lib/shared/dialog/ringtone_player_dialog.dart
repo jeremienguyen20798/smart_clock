@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_file_downloader/flutter_file_downloader.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html;
 import 'package:just_audio/just_audio.dart';
@@ -18,7 +17,8 @@ class RingtonePlayerDialog extends StatefulWidget {
 
 class _RingtonePlayerDialogState extends State<RingtonePlayerDialog> {
   final ringtonePlayer = AudioPlayer();
-  Duration? duration;
+  Duration? duration, position;
+  bool isPlaying = false;
 
   @override
   void initState() {
@@ -65,31 +65,35 @@ class _RingtonePlayerDialogState extends State<RingtonePlayerDialog> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  Text(StringUtils.formatRingtoneDuration(position),
+                      style:
+                          const TextStyle(fontSize: 14.0, color: Colors.white)),
+                  Expanded(
+                      child: Slider(
+                          value: position != null && duration != null
+                              ? (position!.inSeconds / duration!.inSeconds)
+                              : 0.0,
+                          allowedInteraction: SliderInteraction.slideOnly,
+                          onChanged: (value) {})),
                   Text(StringUtils.formatRingtoneDuration(duration),
                       style:
                           const TextStyle(fontSize: 14.0, color: Colors.white)),
-                  Expanded(child: Slider(value: 0.3, onChanged: (value) {})),
                   duration != null
                       ? IconButton(
                           onPressed: () {
-                            ringtonePlayer.play();
+                            setState(() {
+                              if (ringtonePlayer.playing) {
+                                ringtonePlayer.pause();
+                                isPlaying = false;
+                              } else {
+                                ringtonePlayer.play();
+                                isPlaying = true;
+                              }
+                            });
                           },
-                          icon:
-                              const Icon(Icons.play_arrow, color: Colors.white))
+                          icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow,
+                              color: Colors.white))
                       : const SizedBox(),
-                  duration != null
-                      ? IconButton(
-                          onPressed: () async {
-                            final ringtoneUrl =
-                                await crawlRingtoneData(widget.ringtoneUrl);
-                            if (ringtoneUrl != null) {
-                              FileDownloader.downloadFile(
-                                downloadDestination: DownloadDestinations.appFiles,
-                                  url: ringtoneUrl, name: "ringtone");
-                            }
-                          },
-                          icon: const Icon(Icons.pause, color: Colors.white))
-                      : const SizedBox()
                 ],
               ),
             ),
@@ -104,6 +108,11 @@ class _RingtonePlayerDialogState extends State<RingtonePlayerDialog> {
       ringtonePlayer.load().then((value) {
         setState(() {
           duration = value;
+        });
+      });
+      ringtonePlayer.positionStream.listen((event) {
+        setState(() {
+          position = event;
         });
       });
     }

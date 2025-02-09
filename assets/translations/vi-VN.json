@@ -41,5 +41,6 @@
     "default": "Mặc định: ",
     "ringtone": "Nhạc chuông",
     "createAlarmWithAIOffline": "Tạo báo thức với AI khi offline",
-    "featureIsDevelopment": "Tính năng đang phát triển"
+    "featureIsDevelopment": "Tính năng đang phát triển",
+    "editAlarm": "Chỉnh sửa báo thức"
 }

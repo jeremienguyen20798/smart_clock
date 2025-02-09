@@ -62,11 +62,11 @@ class _ItemAlarmState extends State<ItemAlarm> {
               },
               onTap: () {
                 DialogUtils.showEditAlarmDialog(context, widget.alarm,
-                    (dateTime, isActive, typeAlarm) {
+                    (dateTime, isActive, typeAlarm, note) {
                   setState(() {
                     isAlarmActive = isActive;
                     context.read<HomeBloc>().add(OnUpdateAlarmEvent(
-                        widget.alarm.alarmId, dateTime, isActive, typeAlarm));
+                        widget.alarm.alarmId, dateTime, isActive, typeAlarm, note));
                   });
                 });
               },

@@ -17,7 +17,7 @@ class RingtonePage extends StatelessWidget {
           title: Text(
             'ringtone'.tr(),
             style: const TextStyle(
-              fontSize: 16.0,
+              fontSize: 18.0,
               color: Colors.black,
               fontWeight: FontWeight.bold,
             ),
@@ -66,9 +66,7 @@ class RingtonePage extends StatelessWidget {
                     ],
                   ),
                   trailing: IconButton(
-                    onPressed: () {
-                      
-                    },
+                    onPressed: () {},
                     icon: const Icon(Icons.cloud_download, color: Colors.blue),
                   ),
                 ),
