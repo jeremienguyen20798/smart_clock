@@ -75,6 +75,7 @@ class MainActivity : FlutterActivity() {
                 "cancelRingAlarmById" -> {
                     val data = call.arguments as List<*>
                     alarmUtils?.cancelRingAlarms(data)
+                    result.success("canceled")
                 }
 
                 "openAppSettings" -> {

@@ -71,12 +71,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onConfirmDeleteAlarm(
       OnConfirmDeleteAlarmEvent event, Emitter<HomeState> emitter) async {
-    SmartClockLocalDB.deleteAlarm(event.alarmList);
-    alarmList.removeWhere((item) => alarmDeleteList.contains(item));
-    emitter(ConfirmDeleteAlarmState(alarmList));
     final alarmJsonList =
         event.alarmList.map((item) => item.alarmDateTime.toString()).toList();
-    await methodChannel.invokeMethod("cancelRingAlarmById", alarmJsonList);
+    final result =
+        await methodChannel.invokeMethod("cancelRingAlarmById", alarmJsonList);
+    if (result != null) {
+      SmartClockLocalDB.deleteAlarm(event.alarmList);
+      alarmList.removeWhere((item) => alarmDeleteList.contains(item));
+      emitter(ConfirmDeleteAlarmState(alarmList));
+    }
   }
 
   Future<void> _getTextFromSpeech(
