@@ -13,7 +13,6 @@
     "confirm": "Đặt",
     "edit": "Chỉnh sửa",
     "settingsTitle": "Cài đặt",
-    "defaultContentNotify": "Nội dung thông báo mặc định",
     "daily": "Hằng ngày",
     "justOnce": "Một lần",
     "mondayToFriday": "Thứ hai đến thứ sáu",
@@ -38,6 +37,10 @@
     "termsOfUse": "Điều khoản sử dụng",
     "settingAlarm": "Cài đặt báo thức",
     "displayAlarmInLockScreen": "Hiện thị thông báo toàn màn hình ở màn hình khoá",
-    "upgradePro": "Nâng cấp Pro",
-    "translateWithAI": "Dịch ngôn ngữ với AI"
+    "viewMore": "Xem thêm",
+    "default": "Mặc định: ",
+    "ringtone": "Nhạc chuông",
+    "createAlarmWithAIOffline": "Tạo báo thức với AI khi offline",
+    "featureIsDevelopment": "Tính năng đang phát triển",
+    "editAlarm": "Chỉnh sửa báo thức"
 }

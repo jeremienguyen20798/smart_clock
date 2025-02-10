@@ -23,6 +23,7 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
   DateTime dateTime = DateTime.now();
   bool isActive = false;
   AlarmType? typeAlarm;
+  TextEditingController noteController = TextEditingController();
 
   @override
   void initState() {
@@ -44,25 +45,17 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
           insetPadding: const EdgeInsets.symmetric(horizontal: 16.0),
           title: ListTile(
             contentPadding: EdgeInsets.zero,
-            title: RichText(
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-                text: TextSpan(
-                    text: StringUtils.formatTime(widget.alarm.alarmDateTime),
-                    style: const TextStyle(
-                      fontSize: 24.0,
-                      color: Colors.purple,
-                    ),
-                    children: [
-                      TextSpan(
-                          text: " ${widget.alarm.note ?? AppConstants.alarm}",
-                          style: const TextStyle(
-                              fontSize: 18.0, color: Colors.black))
-                    ])),
-            subtitle: AlarmCountdownView(
-                isNote: false,
-                dateTime: widget.alarm.alarmDateTime,
-                isActive: widget.alarm.isActive),
+            title: Text(
+              'editAlarm'.tr(),
+              style: const TextStyle(
+                  fontSize: 18.0,
+                  color: Colors.deepPurple,
+                  fontWeight: FontWeight.bold),
+            ),
+            subtitle: isActive
+                ? AlarmCountdownView(
+                    isNote: false, dateTime: dateTime, isActive: isActive)
+                : null,
             trailing: Switch(
                 value: isActive,
                 onChanged: (value) {
@@ -79,7 +72,7 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
                   width: MediaQuery.of(context).size.width,
                   height: 100.0,
                   child: CupertinoDatePicker(
-                      initialDateTime: widget.alarm.alarmDateTime,
+                      initialDateTime: dateTime,
                       onDateTimeChanged: (value) {
                         setState(() {
                           dateTime = DateTime(
@@ -97,6 +90,14 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
                       use24hFormat: true),
                 ),
                 const SizedBox(height: 32.0),
+                TextField(
+                  controller: noteController,
+                  decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: 'inputAlarmNote'.tr(),
+                      hintText: 'inputNote'.tr()),
+                ),
+                const SizedBox(height: 16.0),
                 DropdownButtonFormField<AlarmType>(
                     decoration: InputDecoration(
                         border: const OutlineInputBorder(),
@@ -141,7 +142,8 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
                         Navigator.pop(context, {
                           "dateTime": dateTime,
                           "isActive": true,
-                          "typeAlarm": typeAlarm
+                          "typeAlarm": typeAlarm,
+                          "note": noteController.text
                         });
                       });
                     },
@@ -168,5 +170,6 @@ class _UpdateAlarmDialogState extends State<UpdateAlarmDialog> {
     isActive = widget.alarm.isActive;
     typeAlarm = StringUtils.alarmTypeValueOf(
         widget.alarm.typeAlarm ?? AppConstants.justOnce);
+    noteController.text = widget.alarm.note ?? AppConstants.alarm;
   }
 }

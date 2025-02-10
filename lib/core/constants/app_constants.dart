@@ -17,6 +17,8 @@ class AppConstants {
 
   static const String privacyPolicyUrl =
       'https://www.termsfeed.com/live/abc23aaf-9363-466d-a53e-c91bdc1e75f1';
+  static const String ringtoneUrl =
+      'https://nhacchuongviet.com/top-100-nhac-bao-thuc-hot-nhat/';
   static Alarm demoAlarm = Alarm(
       alarmId: StringUtils.generateAlarmIdStr(),
       alarmDateTime: DateTime.now().add(const Duration(minutes: 5)),
@@ -26,4 +28,6 @@ class AppConstants {
 
   static const String deleteAlarmAfterNotify =
       'delete_alarm_after_notification';
+
+  static const String editContentNotification = 'edit_content_notification';
 }

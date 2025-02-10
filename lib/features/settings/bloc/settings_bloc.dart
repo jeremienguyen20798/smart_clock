@@ -19,7 +19,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   void _onGetDefaultConfigs(
       OnGetDefaultConfigsEvent event, Emitter<SettingsState> emitter) {
-    emitter(GetDefaultConfigsState(false));
+    final messageDefault =
+        prefs.getString(AppConstants.editContentNotification);
+    emitter(GetDefaultConfigsState(messageDefault, false));
   }
 
   Future<void> _onPrivacyPolicy(
