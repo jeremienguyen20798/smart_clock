@@ -27,13 +27,18 @@ class AlarmService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        val ringtoneFile = getInternalFile()
-        Log.d("TAG", "File location: ${ringtoneFile.path}")
-        mediaPlayer = if (ringtoneFile.exists()) {
-            MediaPlayer.create(this, Uri.fromFile(ringtoneFile))
-        } else {
-            MediaPlayer.create(this, R.raw.sound)
-        }
+        MediaPlayer.create(this, R.raw.sound)
+//        val ringtoneFiles = getInternalFile()
+//        if (ringtoneFiles.exists()) {
+//            if (ringtoneFiles.listFiles() != null) {
+//                val ringtoneFile = ringtoneFiles.listFiles()?.last()
+//                MediaPlayer.create(this, Uri.fromFile(ringtoneFile))
+//            } else {
+//                MediaPlayer.create(this, R.raw.sound)
+//            }
+//        } else {
+//            MediaPlayer.create(this, R.raw.sound)
+//        }
         mediaPlayer?.isLooping = true
         mediaPlayer?.setVolume(0.0F, 1.0F)
     }
@@ -129,9 +134,6 @@ class AlarmService : Service() {
     }
 
     private fun getInternalFile(): File {
-        return File(
-            "/storage/emulated/0/Android/data/com.jeremiestudio.smart_clock.dev/files/data/user/0/com.jeremiestudio.smart_clock.dev/files/",
-            "ringtone.mp3"
-        )
+        return File("/storage/emulated/0/Android/data/com.jeremiestudio.smart_clock.dev/files/data/user/0/com.jeremiestudio.smart_clock.dev/files/")
     }
 }

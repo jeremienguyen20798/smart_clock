@@ -78,8 +78,7 @@ class AlarmUtils(private val context: Context, private val alarmManager: AlarmMa
             calendar.set(Calendar.MILLISECOND, 0)
             val intent = Intent(context, AlarmReceiver::class.java)
             intent.putExtra("notification_id", date.time)
-            intent.putExtra("hour", hour)
-            intent.putExtra("minute", minute)
+            intent.putExtra("date", date.toString())
             intent.putExtra("note", note)
             intent.putExtra("repeat", AlarmType.daily.toString())
             val pendingIntent = PendingIntent.getBroadcast(

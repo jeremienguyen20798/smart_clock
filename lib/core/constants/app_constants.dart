@@ -28,6 +28,5 @@ class AppConstants {
 
   static const String deleteAlarmAfterNotify =
       'delete_alarm_after_notification';
-
-  static const String editContentNotification = 'edit_content_notification';
+  static const String ringtoneName = "ringtone_name";
 }

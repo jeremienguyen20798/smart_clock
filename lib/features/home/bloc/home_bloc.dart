@@ -107,32 +107,43 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onCreateAlarmBySpeech(
       OnCreateAlarmBySpeechEvent event, Emitter<HomeState> emitter) async {
-    if (kDebugMode) {
-      final result = await methodChannel.invokeMethod(
-          'setAlarm', AppConstants.demoAlarm.toJson());
-      if (result != null) {
-        SmartClockLocalDB.createAlarm(AppConstants.demoAlarm);
-        add(GetAlarmListEvent());
-      }
-    } else {
-      emitter(GetTextFromSpeechState(event.prompt));
-      EasyLoading.show();
-      final headPrompt = pref.getString('HeadPrompt');
-      final lastPrompt = pref.getString('LastPrompt');
-      final alarm = await CreateAlarmBySpeechUsecase()
-          .call("$headPrompt${event.prompt}$lastPrompt${DateTime.now()}");
-      EasyLoading.dismiss();
-      if (alarm != null) {
-        alarm.alarmId = StringUtils.generateAlarmIdStr();
-        final result =
-            await methodChannel.invokeMethod('setAlarm', alarm.toJson());
+    try {
+      if (kDebugMode) {
+        final result = await methodChannel.invokeMethod(
+            'setAlarm', AppConstants.demoAlarm.toJson());
         if (result != null) {
-          SmartClockLocalDB.createAlarm(alarm);
+          SmartClockLocalDB.createAlarm(AppConstants.demoAlarm);
           add(GetAlarmListEvent());
         }
       } else {
-        add(OnHandleErrorEvent());
+        emitter(GetTextFromSpeechState(event.prompt));
+        EasyLoading.show();
+        final headPrompt = pref.getString('HeadPrompt');
+        final lastPrompt = pref.getString('LastPrompt');
+        final alarm = await CreateAlarmBySpeechUsecase()
+            .call("$headPrompt${event.prompt}$lastPrompt${DateTime.now()}");
+        if (alarm != null) {
+          alarm.alarmId = StringUtils.generateAlarmIdStr();
+          try {
+            final result =
+                await methodChannel.invokeMethod('setAlarm', alarm.toJson());
+            if (result != null) {
+              SmartClockLocalDB.createAlarm(alarm);
+              add(GetAlarmListEvent());
+            }
+          } catch (error) {
+            debugPrint("Error setting alarm: $error");
+            add(OnHandleErrorEvent());
+          }
+        } else {
+          add(OnHandleErrorEvent());
+        }
       }
+    } catch (error, stackTrace) {
+      debugPrint("Error in _onCreateAlarmBySpeech: $error\n$stackTrace");
+      add(OnHandleErrorEvent());
+    } finally {
+      EasyLoading.dismiss();
     }
   }
 

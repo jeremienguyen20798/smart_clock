@@ -53,7 +53,7 @@ android {
         }
         prod {
             applicationId "com.jeremiestudio.smart_clock"
-            resValue "string", "app_name", "Smart Clock"
+            resValue "string", "app_name", "iReminders"
             dimension "default"
         }
     }

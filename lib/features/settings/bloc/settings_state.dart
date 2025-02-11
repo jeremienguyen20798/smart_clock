@@ -8,13 +8,13 @@ abstract class SettingsState extends Equatable {
 class InitSettingState extends SettingsState {}
 
 class GetDefaultConfigsState extends SettingsState {
-  final String? messageDefault;
+  final String? ringtone;
   final bool isEnable;
 
-  GetDefaultConfigsState(this.messageDefault, this.isEnable);
+  GetDefaultConfigsState(this.ringtone, this.isEnable);
 
   @override
-  List<Object?> get props => [messageDefault, isEnable];
+  List<Object?> get props => [ringtone, isEnable];
 }
 
 class DeleteAlarmAfterNotificationState extends SettingsState {
