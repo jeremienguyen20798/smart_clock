@@ -28,26 +28,30 @@ class AlarmUtils(private val context: Context, private val alarmManager: AlarmMa
         return dateTime
     }
 
+    @SuppressLint("SimpleDateFormat")
+    fun convertLongToTime(time: Long): Date {
+        val date = Date(time)
+        return date
+    }
+
     @SuppressLint("NewApi")
     fun setOnlyOnceAlarm(date: Date?, note: String, alarmId: String) {
         Log.d("TAG", "setOnlyOnceAlarm: $date - $note")
         val calendar = Calendar.getInstance()
         if (date != null) {
             calendar.time = date
-            val month = calendar.get(Calendar.MONTH)
-            val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
             val hourOfDay = calendar.get(Calendar.HOUR_OF_DAY)
             val minute = calendar.get(Calendar.MINUTE)
-            calendar.set(Calendar.MONTH, month)
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            if (date.time <= System.currentTimeMillis()) {
+                calendar.add(Calendar.DAY_OF_YEAR, 1)
+            }
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             calendar.set(Calendar.MINUTE, minute)
             calendar.set(Calendar.SECOND, 0)
             val intent = Intent(context, AlarmReceiver::class.java)
             intent.putExtra("notification_id", date.time)
             intent.putExtra("alarm_id", alarmId)
-            intent.putExtra("hour", hourOfDay)
-            intent.putExtra("minute", minute)
+            intent.putExtra("date", date.time)
             intent.putExtra("note", note)
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
@@ -78,7 +82,7 @@ class AlarmUtils(private val context: Context, private val alarmManager: AlarmMa
             calendar.set(Calendar.MILLISECOND, 0)
             val intent = Intent(context, AlarmReceiver::class.java)
             intent.putExtra("notification_id", date.time)
-            intent.putExtra("date", date.toString())
+            intent.putExtra("date", date.time)
             intent.putExtra("note", note)
             intent.putExtra("repeat", AlarmType.daily.toString())
             val pendingIntent = PendingIntent.getBroadcast(

@@ -21,22 +21,20 @@ class AlarmReceiver : BroadcastReceiver() {
         val alarmUtils = AlarmUtils(context, alarmManager)
         val alarmId = intent.getStringExtra("alarm_id")
         val notificationId: Long = intent.getLongExtra("notification_id", 0)
-        val date = intent.getStringExtra("date")
-        val hour: Int = intent.getIntExtra("hour", 0)
-        val minute: Int = intent.getIntExtra("minute", 0)
+        val date = intent.getLongExtra("date", 0)
         val noteAlarm: String = intent.getStringExtra("note").toString()
         val isDailyRepeat: String = intent.getStringExtra("repeat").toString()
         val alarmIntent = Intent(context, AlarmService::class.java)
-        alarmIntent.putExtra("alarm_id", alarmId)
-        alarmIntent.putExtra("notification_id", notificationId)
+        val hour: Int = (date / 3600000).toInt()
+        val minute: Int = (date / 60000).toInt()
         alarmIntent.putExtra("hour", hour)
         alarmIntent.putExtra("minute", minute)
+        alarmIntent.putExtra("alarm_id", alarmId)
+        alarmIntent.putExtra("notification_id", notificationId)
         alarmIntent.putExtra("note", noteAlarm)
         if (isDailyRepeat == AlarmType.daily.toString()) {
-            if (date != null) {
-                val dateAlarm = alarmUtils.convertDateToStr(date)
-                alarmUtils.setDailyAlarm(dateAlarm, noteAlarm)
-            }
+            val dateAlarm = alarmUtils.convertLongToTime(date)
+            alarmUtils.setDailyAlarm(dateAlarm, noteAlarm)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(alarmIntent)
@@ -44,40 +42,4 @@ class AlarmReceiver : BroadcastReceiver() {
             context.startService(alarmIntent)
         }
     }
-
-//    @SuppressLint("NewApi")
-//    private fun setDailyAlarm(
-//        context: Context,
-//        notificationId: Int,
-//        hour: Int,
-//        minute: Int,
-//        note: String
-//    ) {
-//        val alarmManager = context.getSystemService(ALARM_SERVICE) as AlarmManager
-//        val calendar = Calendar.getInstance()
-//        if (hour <= System.currentTimeMillis().toInt()) {
-//            calendar.add(Calendar.DAY_OF_YEAR, 1)
-//        }
-//        calendar.set(Calendar.HOUR_OF_DAY, hour)
-//        calendar.set(Calendar.MINUTE, minute)
-//        calendar.set(Calendar.SECOND, 0)
-//        calendar.set(Calendar.MILLISECOND, 0)
-//        val intent = Intent(context, AlarmReceiver::class.java)
-//        intent.putExtra("notification_id", notificationId)
-//        intent.putExtra("hour", hour)
-//        intent.putExtra("minute", minute)
-//        intent.putExtra("note", note)
-//        intent.putExtra("repeat", AlarmType.daily.toString())
-//        val pendingIntent = PendingIntent.getBroadcast(
-//            context,
-//            notificationId,
-//            intent,
-//            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//        )
-//        alarmManager.setExactAndAllowWhileIdle(
-//            AlarmManager.RTC_WAKEUP,
-//            calendar.timeInMillis,
-//            pendingIntent
-//        )
-//    }
 }
