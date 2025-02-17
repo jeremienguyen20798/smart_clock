@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.IBinder
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
@@ -24,17 +23,6 @@ class AlarmService : Service() {
     override fun onCreate() {
         super.onCreate()
         mediaPlayer = MediaPlayer.create(this, R.raw.sound)
-//        val ringtoneFiles = getInternalFile()
-//        if (ringtoneFiles.exists()) {
-//            if (ringtoneFiles.listFiles() != null) {
-//                val ringtoneFile = ringtoneFiles.listFiles()?.last()
-//                mediaPlayer = MediaPlayer.create(this, Uri.fromFile(ringtoneFile))
-//            } else {
-//
-//            }
-//        } else {
-//            mediaPlayer = MediaPlayer.create(this, R.raw.sound)
-//        }
         mediaPlayer?.isLooping = true
         mediaPlayer?.setVolume(0.0F, 1.0F)
     }
@@ -53,7 +41,7 @@ class AlarmService : Service() {
         showNotification(
             notificationId.toInt(),
             this,
-            "$noteAlarm - ${String.format("%02d", hour)}:${String.format("%02d", minute)}",
+            "$noteAlarm - ${String.format("%02d:%02d", hour, minute)}",
             alarmId,
         )
         return START_STICKY

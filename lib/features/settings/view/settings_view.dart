@@ -248,7 +248,7 @@ class SettingsView extends StatelessWidget {
                       ),
                     ),
                     trailing: const Text(
-                      '1.0.3',
+                      '1.0.4',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Colors.deepPurple,

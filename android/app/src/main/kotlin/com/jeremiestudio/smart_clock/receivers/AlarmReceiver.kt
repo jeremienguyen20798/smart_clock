@@ -25,8 +25,8 @@ class AlarmReceiver : BroadcastReceiver() {
         val noteAlarm: String = intent.getStringExtra("note").toString()
         val isDailyRepeat: String = intent.getStringExtra("repeat").toString()
         val alarmIntent = Intent(context, AlarmService::class.java)
-        val hour: Int = (date / 3600000).toInt()
-        val minute: Int = (date / 60000).toInt()
+        val hour: Int = (date / 3600000).toInt() % 24 // Lấy giờ trong phạm vi 0-23
+        val minute: Int = (date / 60000).toInt() % 60 // Lấy phút trong phạm vi 0-59
         alarmIntent.putExtra("hour", hour)
         alarmIntent.putExtra("minute", minute)
         alarmIntent.putExtra("alarm_id", alarmId)

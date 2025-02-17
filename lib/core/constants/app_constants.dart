@@ -2,7 +2,8 @@ import 'package:smart_clock/core/utils/string_utils.dart';
 import 'package:smart_clock/data/models/alarm.dart';
 
 class AppConstants {
-  static const String appName = 'Smart Clock';
+  static const String appNameDev = 'Smart Clock';
+  static const String appNamePro = 'iReminders';
   //Home Page
   static const String alarm = 'Báo thức';
 

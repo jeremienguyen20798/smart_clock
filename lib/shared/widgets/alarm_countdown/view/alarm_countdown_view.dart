@@ -64,13 +64,15 @@ class _AlarmCountdownViewState extends State<AlarmCountdownView> {
                     width: 1.0,
                     color: Colors.grey)
                 : const SizedBox(),
-            Text(countdownText,
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.grey,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                maxLines: 1),
+            Expanded(
+              child: Text(countdownText,
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.grey,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  maxLines: 1),
+            ),
           ],
         );
       }

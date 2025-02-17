@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:smart_clock/core/constants/app_constants.dart';
@@ -10,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: AppConstants.appName,
+        title: kDebugMode ? AppConstants.appNameDev : AppConstants.appNamePro,
         locale: context.locale,
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
