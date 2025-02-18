@@ -1,22 +1,17 @@
 package com.jeremiestudio.smart_clock.services
 
 import android.annotation.SuppressLint
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaPlayer
-import android.net.Uri
-import android.os.Environment
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import com.jeremiestudio.smart_clock.AlarmActivity
 import com.jeremiestudio.smart_clock.R
 import com.jeremiestudio.smart_clock.receivers.DeleteAlarmReceiver
 import java.io.File
@@ -27,13 +22,7 @@ class AlarmService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        val ringtoneFile = getInternalFile()
-        Log.d("TAG", "File location: ${ringtoneFile.path}")
-        mediaPlayer = if (ringtoneFile.exists()) {
-            MediaPlayer.create(this, Uri.fromFile(ringtoneFile))
-        } else {
-            MediaPlayer.create(this, R.raw.sound)
-        }
+        mediaPlayer = MediaPlayer.create(this, R.raw.sound)
         mediaPlayer?.isLooping = true
         mediaPlayer?.setVolume(0.0F, 1.0F)
     }
@@ -52,7 +41,7 @@ class AlarmService : Service() {
         showNotification(
             notificationId.toInt(),
             this,
-            "$noteAlarm - ${String.format("%02d", hour)}:${String.format("%02d", minute)}",
+            "$noteAlarm - ${String.format("%02d:%02d", hour, minute)}",
             alarmId,
         )
         return START_STICKY
@@ -66,7 +55,7 @@ class AlarmService : Service() {
 
     @SuppressLint("NewApi")
     private fun showNotification(id: Int, context: Context, message: String, alarmId: String?) {
-        var fullScreenPendingIntent: PendingIntent? = null
+//        var fullScreenPendingIntent: PendingIntent? = null
         val intent = Intent(context, DeleteAlarmReceiver::class.java).apply {
             action = "TURN_OFF_ALARM"
             putExtra("ALARM_ID", alarmId)
@@ -129,9 +118,6 @@ class AlarmService : Service() {
     }
 
     private fun getInternalFile(): File {
-        return File(
-            "/storage/emulated/0/Android/data/com.jeremiestudio.smart_clock.dev/files/data/user/0/com.jeremiestudio.smart_clock.dev/files/",
-            "ringtone.mp3"
-        )
+        return File("/storage/emulated/0/Android/data/com.jeremiestudio.smart_clock.dev/files/data/user/0/com.jeremiestudio.smart_clock.dev/files/")
     }
 }

@@ -1,4 +1,6 @@
 //import 'dart:developer';
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -72,7 +74,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Future<void> _onConfirmDeleteAlarm(
       OnConfirmDeleteAlarmEvent event, Emitter<HomeState> emitter) async {
     final alarmJsonList =
-        event.alarmList.map((item) => item.alarmDateTime.toString()).toList();
+        event.alarmList.map((item) => item.alarmDateTime.toIso8601String()).toList();
     final result =
         await methodChannel.invokeMethod("cancelRingAlarmById", alarmJsonList);
     if (result != null) {
@@ -107,32 +109,43 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onCreateAlarmBySpeech(
       OnCreateAlarmBySpeechEvent event, Emitter<HomeState> emitter) async {
-    if (kDebugMode) {
-      final result = await methodChannel.invokeMethod(
-          'setAlarm', AppConstants.demoAlarm.toJson());
-      if (result != null) {
-        SmartClockLocalDB.createAlarm(AppConstants.demoAlarm);
-        add(GetAlarmListEvent());
-      }
-    } else {
-      emitter(GetTextFromSpeechState(event.prompt));
-      EasyLoading.show();
-      final headPrompt = pref.getString('HeadPrompt');
-      final lastPrompt = pref.getString('LastPrompt');
-      final alarm = await CreateAlarmBySpeechUsecase()
-          .call("$headPrompt${event.prompt}$lastPrompt${DateTime.now()}");
-      EasyLoading.dismiss();
-      if (alarm != null) {
-        alarm.alarmId = StringUtils.generateAlarmIdStr();
-        final result =
-            await methodChannel.invokeMethod('setAlarm', alarm.toJson());
+    try {
+      if (kDebugMode) {
+        final result = await methodChannel.invokeMethod(
+            'setAlarm', AppConstants.demoAlarm.toJson());
         if (result != null) {
-          SmartClockLocalDB.createAlarm(alarm);
+          SmartClockLocalDB.createAlarm(AppConstants.demoAlarm);
           add(GetAlarmListEvent());
         }
       } else {
-        add(OnHandleErrorEvent());
+        emitter(GetTextFromSpeechState(event.prompt));
+        EasyLoading.show();
+        final headPrompt = pref.getString('HeadPrompt');
+        final lastPrompt = pref.getString('LastPrompt');
+        final alarm = await CreateAlarmBySpeechUsecase()
+            .call("$headPrompt${event.prompt}$lastPrompt${DateTime.now()}");
+        if (alarm != null) {
+          alarm.alarmId = StringUtils.generateAlarmIdStr();
+          try {
+            final result =
+                await methodChannel.invokeMethod('setAlarm', alarm.toJson());
+            if (result != null) {
+              SmartClockLocalDB.createAlarm(alarm);
+              add(GetAlarmListEvent());
+            }
+          } catch (error) {
+            debugPrint("Error setting alarm: $error");
+            add(OnHandleErrorEvent());
+          }
+        } else {
+          add(OnHandleErrorEvent());
+        }
       }
+    } catch (error, stackTrace) {
+      debugPrint("Error in _onCreateAlarmBySpeech: $error\n$stackTrace");
+      add(OnHandleErrorEvent());
+    } finally {
+      EasyLoading.dismiss();
     }
   }
 
@@ -171,18 +184,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             DateTime.now().difference(event.alarm.alarmDateTime).inDays;
         event.alarm.alarmDateTime =
             event.alarm.alarmDateTime.add(Duration(days: distance));
-      }
-      if (event.alarm.alarmDateTime.isBefore(DateTime.now())) {
+      } else if (event.alarm.alarmDateTime.isBefore(DateTime.now())) {
         DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
         int distance = tomorrow.difference(event.alarm.alarmDateTime).inDays;
-        // log("Distance: $distance");
+        log("Distance: $distance");
         DateTime dateTime = event.alarm.alarmDateTime;
         event.alarm.alarmDateTime = dateTime.add(Duration(days: distance));
-        event.alarm.save();
       }
+      event.alarm.save();
+      await methodChannel.invokeMethod("resetAlarm", event.alarm.toJson());
       await SmartClockLocalDB.updateAlarmStatus(
           event.alarm.key, event.isActive);
-      await methodChannel.invokeMethod("resetAlarm", event.alarm.toJson());
     }
     emitter(UpdateAlarmByToggleSwitchState(event.alarm));
   }

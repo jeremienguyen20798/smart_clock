@@ -3,6 +3,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../../core/constants/app_constants.dart';
+import '../../core/utils/string_utils.dart';
 
 part 'alarm.g.dart';
 
@@ -63,7 +64,7 @@ class Alarm extends HiveObject {
   @override
   String toString() {
     debugPrint(
-        'Log alarm result: $alarmId, dateTime: ${alarmDateTime.toString()}, note: $note, isActive: $isActive');
+        'Log alarm result: $alarmId, time: ${StringUtils.formatTime(alarmDateTime)}, note: $note, isActive: $isActive');
     return super.toString();
   }
 }

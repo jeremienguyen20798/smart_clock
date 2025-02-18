@@ -19,9 +19,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   void _onGetDefaultConfigs(
       OnGetDefaultConfigsEvent event, Emitter<SettingsState> emitter) {
-    final messageDefault =
-        prefs.getString(AppConstants.editContentNotification);
-    emitter(GetDefaultConfigsState(messageDefault, false));
+    final ringtone =
+        prefs.getString(AppConstants.ringtoneName) ?? 'iPhone ringtone';
+    emitter(GetDefaultConfigsState(ringtone, false));
   }
 
   Future<void> _onPrivacyPolicy(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' as html;
 import 'package:just_audio/just_audio.dart';
 import 'package:smart_clock/core/utils/string_utils.dart';
+
+import '../../domain/usecase/ringtone_usecase.dart';
 
 class RingtonePlayerDialog extends StatefulWidget {
   final String name;
@@ -61,9 +61,11 @@ class _RingtonePlayerDialogState extends State<RingtonePlayerDialog> {
               color: Colors.black,
               width: MediaQuery.of(context).size.width,
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              alignment: Alignment.center,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(StringUtils.formatRingtoneDuration(position),
                       style:
@@ -102,7 +104,8 @@ class _RingtonePlayerDialogState extends State<RingtonePlayerDialog> {
   }
 
   Future<void> getRingtoneData() async {
-    final ringtoneUrl = await crawlRingtoneData(widget.ringtoneUrl);
+    final ringtoneUrl =
+        await RingtoneUsecase().downloadRingtoneByUrl(widget.ringtoneUrl);
     if (ringtoneUrl != null) {
       ringtonePlayer.setUrl(ringtoneUrl);
       ringtonePlayer.load().then((value) {
@@ -116,20 +119,5 @@ class _RingtonePlayerDialogState extends State<RingtonePlayerDialog> {
         });
       });
     }
-  }
-
-  Future<String?> crawlRingtoneData(String url) async {
-    final response = await http.get(Uri.parse(url));
-    final document = html.parse(response.body);
-    final elements = document.getElementsByClassName('single-top');
-    final ringtoneContentElement = elements.last;
-    final audioItems =
-        ringtoneContentElement.getElementsByClassName('audio-item-play');
-    final audioPlayers = audioItems.first.children;
-    final audioUrl = audioPlayers.first
-        .getElementsByTagName('source')
-        .first
-        .attributes['src'];
-    return audioUrl;
   }
 }

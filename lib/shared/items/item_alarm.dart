@@ -66,7 +66,11 @@ class _ItemAlarmState extends State<ItemAlarm> {
                   setState(() {
                     isAlarmActive = isActive;
                     context.read<HomeBloc>().add(OnUpdateAlarmEvent(
-                        widget.alarm.alarmId, dateTime, isActive, typeAlarm, note));
+                        widget.alarm.alarmId,
+                        dateTime,
+                        isActive,
+                        typeAlarm,
+                        note));
                   });
                 });
               },
@@ -101,7 +105,8 @@ class _ItemAlarmState extends State<ItemAlarm> {
                             color: Colors.grey,
                           ))
                       : const SizedBox(),
-                  Expanded(child: AlarmCountdown(alarm: alarm ?? widget.alarm))
+                  Expanded(
+                      child: AlarmCountdown(alarm: alarm ?? widget.alarm))
                 ],
               ),
               trailing: widget.isDelete == null

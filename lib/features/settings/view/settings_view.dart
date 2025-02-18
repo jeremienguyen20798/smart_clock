@@ -17,8 +17,10 @@ class SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
       String localeName = 'Vietnamese';
+      String? ringtoneName;
       if (state is GetDefaultConfigsState) {
         localeName = context.locale.toLanguageName();
+        ringtoneName = state.ringtone;
       }
       return Scaffold(
         backgroundColor: Colors.white,
@@ -75,12 +77,12 @@ class SettingsView extends StatelessWidget {
                           fontSize: 14.0,
                           color: Colors.black,
                         ),
-                        children: const [
+                        children: [
                           TextSpan(
-                              text: 'iPhone ringtone',
-                              style: TextStyle(
+                              text: ringtoneName,
+                              style: const TextStyle(
                                   fontSize: 14.0,
-                                  color: Colors.black,
+                                  color: Colors.deepPurple,
                                   overflow: TextOverflow.ellipsis)),
                         ],
                       ),
@@ -246,7 +248,7 @@ class SettingsView extends StatelessWidget {
                       ),
                     ),
                     trailing: const Text(
-                      '1.0.3',
+                      '1.0.4',
                       style: TextStyle(
                         fontSize: 14.0,
                         color: Colors.deepPurple,

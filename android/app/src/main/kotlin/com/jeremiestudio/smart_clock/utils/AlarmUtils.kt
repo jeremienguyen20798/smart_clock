@@ -28,26 +28,30 @@ class AlarmUtils(private val context: Context, private val alarmManager: AlarmMa
         return dateTime
     }
 
+    @SuppressLint("SimpleDateFormat")
+    fun convertLongToTime(time: Long): Date {
+        val date = Date(time)
+        return date
+    }
+
     @SuppressLint("NewApi")
     fun setOnlyOnceAlarm(date: Date?, note: String, alarmId: String) {
         Log.d("TAG", "setOnlyOnceAlarm: $date - $note")
         val calendar = Calendar.getInstance()
         if (date != null) {
             calendar.time = date
-            val month = calendar.get(Calendar.MONTH)
-            val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
             val hourOfDay = calendar.get(Calendar.HOUR_OF_DAY)
             val minute = calendar.get(Calendar.MINUTE)
-            calendar.set(Calendar.MONTH, month)
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+            if (date.time <= System.currentTimeMillis()) {
+                calendar.add(Calendar.DAY_OF_YEAR, 1)
+            }
             calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
             calendar.set(Calendar.MINUTE, minute)
             calendar.set(Calendar.SECOND, 0)
             val intent = Intent(context, AlarmReceiver::class.java)
             intent.putExtra("notification_id", date.time)
             intent.putExtra("alarm_id", alarmId)
-            intent.putExtra("hour", hourOfDay)
-            intent.putExtra("minute", minute)
+            intent.putExtra("date", calendar.timeInMillis)
             intent.putExtra("note", note)
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
@@ -78,8 +82,7 @@ class AlarmUtils(private val context: Context, private val alarmManager: AlarmMa
             calendar.set(Calendar.MILLISECOND, 0)
             val intent = Intent(context, AlarmReceiver::class.java)
             intent.putExtra("notification_id", date.time)
-            intent.putExtra("hour", hour)
-            intent.putExtra("minute", minute)
+            intent.putExtra("date", calendar.timeInMillis)
             intent.putExtra("note", note)
             intent.putExtra("repeat", AlarmType.daily.toString())
             val pendingIntent = PendingIntent.getBroadcast(
@@ -99,27 +102,28 @@ class AlarmUtils(private val context: Context, private val alarmManager: AlarmMa
     @SuppressLint("NewApi")
     fun setWeeklyAlarm(date: Date?, note: String) {
         val calendar = Calendar.getInstance()
+        val now = Calendar.getInstance()
         if (date != null) {
             calendar.time = date
-            val hour = calendar.get(Calendar.HOUR_OF_DAY)
-            val minute = calendar.get(Calendar.MINUTE)
-            calendar.set(Calendar.HOUR_OF_DAY, hour)
-            calendar.set(Calendar.MINUTE, minute)
-            calendar.set(Calendar.SECOND, 0)
+            // Tính số ngày đến lần báo thức tiếp theo
+            var daysUntilNextAlarm = (calendar.get(Calendar.DAY_OF_WEEK) - now.get(Calendar.DAY_OF_WEEK) + 7) % 7
+            if (daysUntilNextAlarm == 0) daysUntilNextAlarm = 7 // Nếu trùng hôm nay, đẩy sang tuần sau
+            calendar.add(Calendar.DAY_OF_MONTH, daysUntilNextAlarm)
             val intent = Intent(context, AlarmReceiver::class.java)
             intent.putExtra("notification_id", date.time)
-            intent.putExtra("hour", hour)
-            intent.putExtra("minute", minute)
+            intent.putExtra("date", calendar.timeInMillis)
             intent.putExtra("note", note)
+            intent.putExtra("repeat", AlarmType.mondaytofriday.toString())
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
                 date.time.toInt(),
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            alarmManager?.setExactAndAllowWhileIdle(
+            alarmManager?.setRepeating(
                 AlarmManager.RTC_WAKEUP,
                 calendar.timeInMillis,
+                AlarmManager.INTERVAL_DAY * 7, // Lặp lại hàng tuần
                 pendingIntent
             )
         }

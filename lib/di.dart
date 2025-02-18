@@ -4,9 +4,11 @@ import 'package:hive_ce/hive.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_clock/data/repositories/remote_config_repository_impl.dart';
+import 'package:smart_clock/data/repositories/ringtone_repository_impl.dart';
 import 'package:smart_clock/data/repositories/speech_to_text_repository_impl.dart';
 import 'package:smart_clock/data/repositories/tts_repositories.dart';
 import 'package:smart_clock/domain/repository/remote_config_repository.dart';
+import 'package:smart_clock/domain/repository/ringtone_repository.dart';
 import 'package:smart_clock/domain/repository/tts_repository.dart';
 import 'package:smart_clock/hive_registrar.g.dart';
 import 'package:speech_to_text/speech_to_text.dart';
@@ -22,6 +24,8 @@ class DependencyInjection {
     final directory = await getApplicationDocumentsDirectory();
     Hive.init(directory.path);
     Hive.registerAdapters();
+    RingtoneRepository ringtoneRepository = RingtoneRepositoryImpl();
+    getIt.registerSingleton<RingtoneRepository>(ringtoneRepository);
     if (kReleaseMode) {
       SpeechToText speechToText = SpeechToText();
       SpeechToTextRepository repository =
